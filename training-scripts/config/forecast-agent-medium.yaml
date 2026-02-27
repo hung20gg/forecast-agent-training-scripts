@@ -1,0 +1,122 @@
+data:
+  tokenizer: null
+  train_files: ~/data/financial-dataset/train.parquet
+  val_files: ~/data/financial-dataset/test.parquet
+  max_prompt_length: 64000
+  max_response_length: 16000
+  shuffle: True
+  train_batch_size: 256
+  return_raw_chat: True
+
+algorithm:
+  adv_estimator: grpo
+
+actor_rollout_ref:
+  hybrid_engine: True
+  model:
+    # path: Qwen/Qwen3-4B-Thinking-2507
+    path: Qwen/Qwen3-4B-Thinking-2507
+    enable_gradient_checkpointing: True
+    enable_activation_offload: False
+    trust_remote_code: True
+    use_remove_padding: False
+    
+    # Lora config, only effective when the model supports lora or you have wrapped the model with lora yourself
+    lora_rank: 64
+    lora_alpha: 32
+    target_modules: all-linear
+    exclude_modules: '.*visual.*'
+  
+  actor:
+    strategy: fsdp  # This is for backward-compatibility
+    ppo_mini_batch_size: 256
+    ppo_micro_batch_size: null # will be deprecated, use ppo_micro_batch_size_per_gpu
+    ppo_micro_batch_size_per_gpu: 8
+    use_dynamic_bsz: False
+    ppo_max_token_len_per_gpu: 16384 # n * ${data.max_prompt_length} + ${data.max_response_length}
+    grad_clip: 1.0
+    clip_ratio: 0.2
+    entropy_coeff: 0.0
+    use_kl_loss: True # True for GRPO
+    kl_loss_coef: 0.001 # for grpo
+    kl_loss_type: low_var_kl # for grpo
+    # Rollout Correction (corrects distribution mismatch between rollout and training)
+    rollout_correction:
+      rollout_is: token # IS weights: token/sequence/null
+      rollout_is_threshold: 2.0 # Upper threshold for IS weights
+      rollout_rs: null # Rejection sampling: token/sequence/geometric/null
+      rollout_rs_threshold: null # RS upper threshold
+      rollout_rs_threshold_lower: null # RS lower threshold
+      rollout_token_veto_threshold: null # Per-token veto (null to disable)
+    use_torch_compile: False # False to disable torch compile
+
+    ppo_epochs: 1
+    data_loader_seed: null
+    shuffle: true
+    
+    optim:
+      # lr: 1e-6
+            
+      # Lora      
+      lr: 1e-4
+
+      lr_warmup_steps: -1 # Prioritized. Negative values mean delegating to lr_warmup_steps_ratio.
+      lr_warmup_steps_ratio: 0.05  # the total steps will be injected during runtime
+      min_lr_ratio: 0.0   # only used with cosine lr scheduler, default to 0.0
+      num_cycles: 0.5     # only used with cosine lr scheduler, default to 0.5
+      lr_scheduler_type: cosine  # select from constant/cosine
+      total_training_steps: -1  # must be override by program
+    
+    fsdp_config:
+      param_offload: False
+      optimizer_offload: False
+      fsdp_size: -1
+    checkpoint:
+      # What to include in saved checkpoints
+      # with 'hf_model' you can save whole model as hf format, now only use sharded model checkpoint to save space
+      save_contents: ['model', 'optimizer', 'extra']
+      # For more flexibility, you can specify the contents to load from the checkpoint.
+      load_contents: ${actor_rollout_ref.actor.checkpoint.save_contents}
+  ref:
+    fsdp_config:
+      param_offload: False
+      wrap_policy:
+        # transformer_layer_cls_to_wrap: None
+        min_num_params: 0
+
+  rollout:
+    name: vllm
+    mode: async
+    multi_turn:
+      enable: True
+      max_user_turns: 20
+      tool_config_path: ./mcp_config.yaml # path to the tool config file, only needed when max_user_turns > 0
+    temperature: 1.0
+    top_k: -1 # 0 for hf rollout, -1 for vllm rollout
+    top_p: 1
+    # for vllm rollout
+    dtype: bfloat16 # should align with FSDP
+    gpu_memory_utilization: 0.5
+    ignore_eos: False
+    enforce_eager: True
+    free_cache_engine: True
+    max_num_batched_tokens: 8192
+    max_num_seqs: 1024
+    do_sample: True
+    engine_kwargs: # inference engine parameters, please refer vllm/sglang official doc for detail
+      vllm: 
+        disable_mm_preprocessor_cache: True
+      sglang: {}
+
+    n: 1 # for each prompt, sample n responses (i.e. num sample times). set it to values > 1 for grpo, rloo
+    calculate_log_probs: True # set to True for computing log probs via rollouts
+
+trainer:
+  project_name: finance-grpo
+  run_name: qwen3-4b-thinking-2507
+  total_epochs: 3
+  logger: ["console","wandb"]
+
+custom_reward_function:
+  path: ./reward_function.py
+  name: compute_score
