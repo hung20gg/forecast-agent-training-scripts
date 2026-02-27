@@ -35,7 +35,4 @@ python3 -m verl.trainer.main_ppo --config-path=$CONFIG_PATH \
     algorithm.adv_estimator=grpo \
     data.train_files="$train_files" \
     data.val_files="$test_files" \
-    trainer.experiment_name="$EXPERIMENT_NAME" \
-    trainer.n_gpus_per_node=1 \
-    trainer.nnodes=1 \
     actor_rollout_ref.rollout.multi_turn.tool_config_path="$PROJECT_DIR/training-scripts/config/tool_config/mcp_config.yml"
