@@ -18,16 +18,16 @@ while [[ $# -gt 0 ]]; do
             ;;
         *)
             echo "Unknown argument: $1"
-            echo "Usage: $0 [--size small|medium|large] [--multi-gpu]"
+            echo "Usage: $0 [--size macro|small|medium|large] [--multi-gpu]"
             exit 1
             ;;
     esac
 done
 
 # Validate size
-if [[ "$SIZE" != "small" && "$SIZE" != "medium" && "$SIZE" != "large" ]]; then
-    echo "Error: --size must be one of: small, medium, large"
-    echo "Usage: $0 [--size small|medium|large] [--multi-gpu]"
+if [[ "$SIZE" != "small" && "$SIZE" != "medium" && "$SIZE" != "large" && "$SIZE" != "macro" ]]; then
+    echo "Error: --size must be one of: small, medium, large, macro"
+    echo "Usage: $0 [--size small|medium|large|macro] [--multi-gpu]"
     exit 1
 fi
 

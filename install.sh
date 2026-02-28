@@ -50,7 +50,7 @@ echo "Cloning verl"
 echo "========================================"
 
 if [ ! -d "verl" ]; then
-    git clone https://github.com/verl-project/verl.git
+    git clone --branch main --depth 1 https://github.com/verl-project/verl.git
 fi
 
 cd verl
@@ -67,6 +67,9 @@ echo "Installing editable package"
 echo "========================================"
 
 pip install --no-deps -e .
+
+pip install flash-attn==2.8.1 --no-build-isolation
+pip install numpy==2.2.6
 
 echo "========================================"
 echo "If you need pyext (Python 3.11 fork)"

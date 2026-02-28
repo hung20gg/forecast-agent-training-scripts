@@ -23,7 +23,7 @@ actor_rollout_ref:
     
     # Lora config, only effective when the model supports lora or you have wrapped the model with lora yourself
     lora_rank: 64
-    lora_alpha: 32
+    lora_alpha: 128
     target_modules: all-linear
     exclude_modules: '.*visual.*'
   
@@ -100,6 +100,7 @@ actor_rollout_ref:
     ignore_eos: False
     enforce_eager: True
     free_cache_engine: True
+    tensor_model_parallel_size: 1
     max_num_batched_tokens: 8192
     max_num_seqs: 1024
     do_sample: True

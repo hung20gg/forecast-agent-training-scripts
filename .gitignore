@@ -1,1 +1,7 @@
 verl/
+verl/*
+
+*.exe
+
+outputs/
+__pycache__/

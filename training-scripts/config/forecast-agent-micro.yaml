@@ -1,5 +1,12 @@
+hydra:
+  searchpath:
+    - file://verl/verl/trainer/config
+
+defaults:
+  - ppo_trainer
+  - _self_
+
 data:
-  tokenizer: null
   train_files: ~/data/financial-dataset/train.parquet
   val_files: ~/data/financial-dataset/test.parquet
   max_prompt_length: 64000
@@ -15,15 +22,15 @@ actor_rollout_ref:
   hybrid_engine: True
   model:
     # path: Qwen/Qwen3-4B-Thinking-2507
-    path: Qwen/Qwen3.5-35B-A3B
+    path: Qwen/Qwen3-0.6B
     enable_gradient_checkpointing: True
     enable_activation_offload: False
     trust_remote_code: True
-    use_remove_padding: False
+    use_remove_padding: True
     
     # Lora config, only effective when the model supports lora or you have wrapped the model with lora yourself
-    lora_rank: 64
-    lora_alpha: 128
+    lora_rank: 8
+    lora_alpha: 16
     target_modules: all-linear
     exclude_modules: '.*visual.*'
   
@@ -31,7 +38,7 @@ actor_rollout_ref:
     strategy: fsdp  # This is for backward-compatibility
     ppo_mini_batch_size: 256
     ppo_micro_batch_size: null # will be deprecated, use ppo_micro_batch_size_per_gpu
-    ppo_micro_batch_size_per_gpu: 8
+    ppo_micro_batch_size_per_gpu: 4
     use_dynamic_bsz: False
     ppo_max_token_len_per_gpu: 16384 # n * ${data.max_prompt_length} + ${data.max_response_length}
     grad_clip: 1.0
@@ -41,13 +48,6 @@ actor_rollout_ref:
     kl_loss_coef: 0.001 # for grpo
     kl_loss_type: low_var_kl # for grpo
     # Rollout Correction (corrects distribution mismatch between rollout and training)
-    rollout_correction:
-      rollout_is: token # IS weights: token/sequence/null
-      rollout_is_threshold: 2.0 # Upper threshold for IS weights
-      rollout_rs: null # Rejection sampling: token/sequence/geometric/null
-      rollout_rs_threshold: null # RS upper threshold
-      rollout_rs_threshold_lower: null # RS lower threshold
-      rollout_token_veto_threshold: null # Per-token veto (null to disable)
     use_torch_compile: False # False to disable torch compile
 
     ppo_epochs: 1
@@ -83,6 +83,7 @@ actor_rollout_ref:
       wrap_policy:
         # transformer_layer_cls_to_wrap: None
         min_num_params: 0
+    log_prob_micro_batch_size_per_gpu: 4 # should be aligned with actor's ppo_micro_batch_size_per_gpu for better performance
 
   rollout:
     name: vllm
@@ -100,7 +101,7 @@ actor_rollout_ref:
     ignore_eos: False
     enforce_eager: True
     free_cache_engine: True
-    tensor_model_parallel_size: 2
+    tensor_model_parallel_size: 1
     max_num_batched_tokens: 8192
     max_num_seqs: 1024
     do_sample: True
@@ -109,12 +110,17 @@ actor_rollout_ref:
         disable_mm_preprocessor_cache: True
       sglang: {}
 
+    log_prob_micro_batch_size_per_gpu: 4 # should be aligned with ref's log_prob_micro_batch_size_per_gpu for better performance
+
     n: 1 # for each prompt, sample n responses (i.e. num sample times). set it to values > 1 for grpo, rloo
     calculate_log_probs: True # set to True for computing log probs via rollouts
 
+reward_model:
+  enable: False
+
 trainer:
   project_name: finance-grpo
-  run_name: qwen3.5-35b-a3b
+  run_name: qwen3-0.6b
   total_epochs: 3
   logger: ["console","wandb"]
 
