@@ -5,3 +5,5 @@ verl/*
 
 outputs/
 __pycache__/
+wandb/
+logs/

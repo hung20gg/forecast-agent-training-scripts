@@ -53,6 +53,12 @@ if [ ! -d "verl" ]; then
     git clone --branch main --depth 1 https://github.com/verl-project/verl.git
 fi
 
+echo "========================================"
+echo "Patching verl schemas"
+echo "========================================"
+
+bash training-scripts/patch_schemas.sh
+
 cd verl
 
 echo "========================================"

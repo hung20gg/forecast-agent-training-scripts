@@ -18,16 +18,16 @@ while [[ $# -gt 0 ]]; do
             ;;
         *)
             echo "Unknown argument: $1"
-            echo "Usage: $0 [--size macro|small|medium|large] [--multi-gpu]"
+            echo "Usage: $0 [--size micro|small|medium|large] [--multi-gpu]"
             exit 1
             ;;
     esac
 done
 
 # Validate size
-if [[ "$SIZE" != "small" && "$SIZE" != "medium" && "$SIZE" != "large" && "$SIZE" != "macro" ]]; then
-    echo "Error: --size must be one of: small, medium, large, macro"
-    echo "Usage: $0 [--size small|medium|large|macro] [--multi-gpu]"
+if [[ "$SIZE" != "small" && "$SIZE" != "medium" && "$SIZE" != "large" && "$SIZE" != "micro" ]]; then
+    echo "Error: --size must be one of: small, medium, large, micro"
+    echo "Usage: $0 [--size small|medium|large|micro] [--multi-gpu]"
     exit 1
 fi
 
@@ -38,10 +38,20 @@ export SIZE="$SIZE"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# # Copy the training-scripts/ under the verl/
+
+# cp -r "$SCRIPT_DIR/training-scripts" "$SCRIPT_DIR/verl/"
+
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+mkdir -p "$SCRIPT_DIR/logs"
+LOG_FILE="$SCRIPT_DIR/logs/training_${SIZE}_${TIMESTAMP}.log"
+
 if [[ $MULTI_GPU -eq 1 ]]; then
     echo "Running multi-GPU training..."
-    bash "$SCRIPT_DIR/training-scripts/run_qwen3_multi_gpu.sh"
+    bash "$SCRIPT_DIR/training-scripts/run_qwen3_multi_gpu.sh" | tee "$LOG_FILE"
 else
     echo "Running single-GPU training..."
-    bash "$SCRIPT_DIR/training-scripts/run_qwen3_single_gpu.sh"
+    bash "$SCRIPT_DIR/training-scripts/run_qwen3_single_gpu.sh" | tee "$LOG_FILE"
 fi
+
+echo "Training log saved to: $LOG_FILE"

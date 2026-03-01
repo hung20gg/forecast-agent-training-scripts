@@ -1,7 +1,9 @@
 {
     "mcpServers": {
         "Financial Database": {
-            "url": "https://mcp.quanghung20gg.com/sse"
+            "type": "sse",
+            "url": "http://localhost:9003/sse",
+            "auth_token": "None"
         }
     }
 }

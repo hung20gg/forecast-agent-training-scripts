@@ -1,0 +1,9 @@
+tools:
+  - class_name: verl.tools.mcp_base_tool.MCPBaseTool
+    config:
+      type: mcp
+      rate_limit: 120
+      timeout: 120
+    mcp:
+      mcp_servers_config_path: ./training-scripts/config/tool_config/mcp_server.json
+      # optional

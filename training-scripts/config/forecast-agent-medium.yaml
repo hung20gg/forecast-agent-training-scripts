@@ -90,8 +90,12 @@ actor_rollout_ref:
     multi_turn:
       enable: True
       max_user_turns: 20
-      tool_config_path: ./mcp_config.yaml # path to the tool config file, only needed when max_user_turns > 0
-    temperature: 1.0
+      tool_config_path: ./training-scripts/config/tool_config/mcp_config.yaml # path to the tool config file, only needed when max_user_turns > 0
+    
+    agent:
+      default_agent_loop: tool_agent
+
+    temperature: 0.7
     top_k: -1 # 0 for hf rollout, -1 for vllm rollout
     top_p: 1
     # for vllm rollout
@@ -119,5 +123,5 @@ trainer:
   logger: ["console","wandb"]
 
 custom_reward_function:
-  path: ./reward_function.py
+  path: ./training-scripts/config/reward_function.py
   name: compute_score

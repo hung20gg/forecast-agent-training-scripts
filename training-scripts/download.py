@@ -26,7 +26,7 @@ import datasets
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-with open(os.path.join(current_dir, "react_system_prompt.md"), "r") as f:
+with open(os.path.join(current_dir, "config", "react_system_prompt.md"), "r") as f:
     react_system_prompt = f.read()
 
 
@@ -50,8 +50,6 @@ if __name__ == "__main__":
 
     train_dataset = dataset["train"]
     test_dataset = dataset["test"]
-
-    instruction_following = 'Let\'s think step by step and output the final answer after "####".'
 
     # add a row to each data item that represents a unique id
     def make_map_fn(split):

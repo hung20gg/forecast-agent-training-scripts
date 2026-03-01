@@ -46,7 +46,7 @@ def nll_exclude_min(pred_mean, pred_std, true_mean, true_std = 0):
     return math.log(pred_std/true_std) + 0.5 * (true_std ** 2 + (pred_mean - true_mean) ** 2) / true_std ** 2 - 0.5
 
 
-def compute_score(data_sources, solution_strs, ground_truths, extra_infos, alpha = 1):
+def compute_score(data_source, solution_str, ground_truth, extra_info, alpha = 1):
 
     # Extra infos:
     # {
@@ -59,9 +59,11 @@ def compute_score(data_sources, solution_strs, ground_truths, extra_infos, alpha
     #     "id": "c16c4a04-5501-491c-a127-3a9a2fe951cb"
     # }
 
-    max_date_time = datetime.strptime(extra_infos['time_asked'], '%Y-%m-%d %H:%M:%S')
+    # print(f"### Ground truths: {ground_truth}")
 
-    tool_calls = extract_tool_call(solution_strs)
+    max_date_time = datetime.strptime(extra_info['time_asked'], '%Y-%m-%d %H:%M:%S')
+
+    tool_calls = extract_tool_call(solution_str)
     for tool_call in tool_calls:
         tool_call = json.loads(tool_call)
         for key, value in tool_call.get('arguments').items():
@@ -73,14 +75,14 @@ def compute_score(data_sources, solution_strs, ground_truths, extra_infos, alpha
                 if date_time > max_date_time + timedelta(days=1):
                     return -1
     
-    answer = extract_answer(solution_strs)
+    answer = extract_answer(solution_str)
     
     mean, std = extract_numerical_answer(answer)
     
     if mean is None or std is None:
         return - 1
     
-    gt_mean = ground_truths['mean']
-    gt_std = ground_truths['std']
+    gt_mean = ground_truth['mean']
+    gt_std = ground_truth['std']
     
     return chi2_pdf(len(tool_calls)) - max(alpha * nll_exclude_min(mean, std, gt_mean, gt_std) + 1, -1)

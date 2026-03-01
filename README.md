@@ -1,36 +1,75 @@
-You should use  the verl repo for this
+# Forecast Agent Training Scripts
 
-After run `install.sh`, the folder structure should be like this:
+Training scripts for the Forecast Agent using [verl](https://github.com/verl-project/verl).
+
+## Folder Structure
+
+After running `build.sh`, the folder structure will look like:
 
 ```
   |- training-scripts/
       |- run_qwen3_single_gpu.sh
       |- run_qwen3_multi_gpu.sh
+      |- patch_schemas.sh       # patches verl/verl/tools/schemas.py
+      |- patch/
+          |- *.py         # source file for the patch
       |- config/
-  |- install.sh
+          |- *.yaml         # training configs
+          |- tool_config/
+  |- build.sh
   |- run.sh
-  |- verl/ # this is the verl repo
-      | - verl/
-      |- trainer/
-          |- main_ppo.py
-      |- ... # other files in the verl repo
-``` 
-
-Then run via `run.sh` to start the training. You can flag [small|medium|large] to select the model size. By default, it will run the small version of qwen3. You can also specify `--multi-gpu` to run the multi gpu version of the training script.
-
-Install via `install.sh`:
-
-```bash
-chmod +x install.sh
-./install.sh
+  |- logs/                      # training logs (auto-created)
+  |- verl/                      # cloned verl repo
+      |- verl/
+      |- ...
 ```
 
-Run training via `run.sh`:
+## Setup
+
+`build.sh` will:
+1. Create a fresh `verl` conda environment (Python 3.11)
+2. Clone the verl repo
+3. Apply the schema patch (`training-scripts/patch_schemas.sh`)
+4. Install vLLM/SGLang/MCore inference frameworks
+5. Install verl in editable mode + flash-attn
+
+```bash
+chmod +x build.sh
+./build.sh
+```
+
+After installation, activate the environment:
+
+```bash
+conda activate verl
+```
+
+## Run Training
 
 ```bash
 chmod +x run.sh
-# for single gpu
+
+# Single GPU — small model (default)
 ./run.sh
-# for multi gpu
+
+# Select model size: micro | small | medium | large
+./run.sh --size micro
+./run.sh --size medium
+./run.sh --size large
+
+# Multi-GPU
 ./run.sh --multi-gpu
+./run.sh --size large --multi-gpu
 ```
+
+Training logs are saved to `logs/training_<size>_<timestamp>.log`.
+
+## Patching verl Schemas
+
+If you need to re-apply the schema patch independently:
+
+```bash
+bash training-scripts/patch_schemas.sh
+```
+
+This copies `training-scripts/patch/schemas.py` → `verl/verl/tools/schemas.py`.
