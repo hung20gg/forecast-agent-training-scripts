@@ -2,6 +2,8 @@
 
 Training scripts for the Forecast Agent using [verl](https://github.com/verl-project/verl).
 
+> **Note:** This repo builds verl from source because GPU providers like **[Vast.AI](https://vast.ai/)** has poor support with KVM images. If you are using the official verl Docker image instead, modify the path in `patch_schemas.sh` and `*.yaml` files.
+
 ## Folder Structure
 
 After running `build.sh`, the folder structure will look like:
