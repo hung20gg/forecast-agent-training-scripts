@@ -93,7 +93,7 @@ actor_rollout_ref:
       tool_config_path: ./training-scripts/config/tool_config/mcp_config.yaml # path to the tool config file, only needed when max_user_turns > 0
     
     agent:
-      default_agent_loop: tool_agent
+      default_agent_loop: tool_agent_loop
 
     temperature: 0.7
     top_k: -1 # 0 for hf rollout, -1 for vllm rollout
@@ -113,7 +113,7 @@ actor_rollout_ref:
         disable_mm_preprocessor_cache: True
       sglang: {}
 
-    n: 1 # for each prompt, sample n responses (i.e. num sample times). set it to values > 1 for grpo, rloo
+    n: 5 # for each prompt, sample n responses (i.e. num sample times). set it to values > 1 for grpo, rloo
     calculate_log_probs: True # set to True for computing log probs via rollouts
 
 trainer:

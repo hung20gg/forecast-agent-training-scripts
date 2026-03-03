@@ -8,7 +8,7 @@ CONFIG_PATH="$PROJECT_DIR/training-scripts/config"
 
 DATASET_DIR="$HOME/data/finance"
 
-# python "$PROJECT_DIR/training-scripts/download.py" --local_save_dir $DATASET_DIR
+python "$PROJECT_DIR/training-scripts/download.py" --local_save_dir $DATASET_DIR
 
 financial_train_path="$DATASET_DIR/train.parquet"
 financial_test_path="$DATASET_DIR/test.parquet"
@@ -36,7 +36,7 @@ python3 -m verl.trainer.main_ppo --config-path=$CONFIG_PATH \
     data.train_files="$train_files" \
     data.val_files="$test_files" \
     actor_rollout_ref.rollout.multi_turn.tool_config_path="$PROJECT_DIR/training-scripts/config/tool_config/mcp_config.yaml" \
-    actor_rollout_ref.rollout.agent.default_agent_loop=tool_agent \
+    actor_rollout_ref.rollout.agent.default_agent_loop=tool_agent_123 \
     trainer.n_gpus_per_node=1 \
     trainer.save_freq=40 \
     trainer.test_freq=20 \

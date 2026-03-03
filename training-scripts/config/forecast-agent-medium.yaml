@@ -113,7 +113,7 @@ actor_rollout_ref:
         disable_mm_preprocessor_cache: True
       sglang: {}
 
-    n: 1 # for each prompt, sample n responses (i.e. num sample times). set it to values > 1 for grpo, rloo
+    n: 5 # for each prompt, sample n responses (i.e. num sample times). set it to values > 1 for grpo, rloo
     calculate_log_probs: True # set to True for computing log probs via rollouts
 
 trainer:

@@ -63,6 +63,7 @@ if __name__ == "__main__":
             data = example
             data["prompt"] = prompt
             data["ability"] = "finance"
+            data["agent_name"] = "tool_agent"
             return data
 
         return process_fn
