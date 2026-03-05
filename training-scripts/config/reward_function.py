@@ -60,13 +60,12 @@ def compute_score(data_source, solution_str, ground_truth, extra_info, alpha = 0
     #     "question_type": "stock_stats",
     #     "std": 355.12,
     #     "id": "c16c4a04-5501-491c-a127-3a9a2fe951cb"
-
-    print('### Extra info:', extra_info)
     # }
 
     max_date_time = datetime.strptime(extra_info['time_asked'], '%Y-%m-%d %H:%M:%S')
+    tool_calls = []
 
-    tool_calls = extract_tool_call(solution_str)
+    # tool_calls = extract_tool_call(solution_str)
     # for tool_call in tool_calls:
     #     tool_call = json.loads(tool_call)
     #     for key, value in tool_call.get('arguments').items():
@@ -91,6 +90,6 @@ def compute_score(data_source, solution_str, ground_truth, extra_info, alpha = 0
 
     print(f"### Extracted answer: mean={mean}, std={std}, ground_truth_mean={gt_mean}, ground_truth_std={gt_std}, reward={max( - alpha * nll_exclude_min(mean, std, gt_mean, gt_std) + 1, -1)}")
     
-    print('### Reward:', nll_exclude_min(mean, std, gt_mean, gt_std) + 1 )
+    print('### Reward:', nll_exclude_min(mean, std, gt_mean, gt_std))
 
     return chi2_pdf(len(tool_calls)) + max( - alpha * nll_exclude_min(mean, std, gt_mean, gt_std) + 1, -1)
