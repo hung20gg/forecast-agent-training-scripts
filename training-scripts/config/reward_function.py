@@ -62,6 +62,8 @@ def compute_score(data_source, solution_str, ground_truth, extra_info, alpha = 0
     #     "id": "c16c4a04-5501-491c-a127-3a9a2fe951cb"
     # }
 
+    print("### Extra info:", extra_info)
+
     max_date_time = datetime.strptime(extra_info['time_asked'], '%Y-%m-%d %H:%M:%S')
     tool_calls = []
 

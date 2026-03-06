@@ -57,7 +57,7 @@ echo "========================================"
 echo "Patching verl schemas"
 echo "========================================"
 
-bash training-scripts/patch_schemas.sh
+bash training-scripts/patch_update.sh
 
 cd verl
 
