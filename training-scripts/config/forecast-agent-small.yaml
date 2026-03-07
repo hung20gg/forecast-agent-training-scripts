@@ -12,7 +12,7 @@ data:
   max_prompt_length: 64000
   max_response_length: 16000
   shuffle: True
-  train_batch_size: 256
+  train_batch_size: 32
   return_raw_chat: True
 
 algorithm:
@@ -27,13 +27,10 @@ actor_rollout_ref:
     enable_activation_offload: False
     trust_remote_code: True
     use_remove_padding: True
-    
-    target_modules: all-linear
-    exclude_modules: '.*visual.*'
   
   actor:
     strategy: fsdp  # This is for backward-compatibility
-    ppo_mini_batch_size: 256
+    ppo_mini_batch_size: 32
     ppo_micro_batch_size: null # will be deprecated, use ppo_micro_batch_size_per_gpu
     ppo_micro_batch_size_per_gpu: 4
     use_dynamic_bsz: False

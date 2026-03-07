@@ -20,13 +20,7 @@ actor_rollout_ref:
     enable_activation_offload: False
     trust_remote_code: True
     use_remove_padding: False
-    
-    # Lora config, only effective when the model supports lora or you have wrapped the model with lora yourself
-    lora_rank: 64
-    lora_alpha: 128
-    target_modules: all-linear
-    exclude_modules: '.*visual.*'
-  
+
   actor:
     strategy: fsdp  # This is for backward-compatibility
     ppo_mini_batch_size: 256
