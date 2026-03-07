@@ -75,3 +75,6 @@ bash training-scripts/patch_schemas.sh
 ```
 
 This copies `training-scripts/patch/schemas.py` → `verl/verl/tools/schemas.py`.
+
+TODO:
+ - [] Add wandb api key first before the run

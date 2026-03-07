@@ -85,6 +85,7 @@ class AgentData:
 
         # Temporary state for tool calls
         self.tool_calls: list[FunctionCall] = []
+        self.all_tool_calls: list[FunctionCall] = []  # Keep track of all tool calls for the entire conversation
 
         self.routed_experts = None
 
@@ -168,10 +169,6 @@ class ToolAgentLoop(AgentLoopBase):
                 state = await self._handle_pending_state(agent_data, sampling_params)
             elif state == AgentState.GENERATING:
                 state = await self._handle_generating_state(agent_data, sampling_params)
-                if processing_tool:
-                    os.makedirs("debug", exist_ok=True)
-                    with open(f"debug/{agent_data.request_id}_messages.txt", "w", encoding='utf-8') as f:
-                        f.write(self.tokenizer.decode(agent_data.prompt_ids, skip_special_tokens=True))
 
             elif state == AgentState.PROCESSING_TOOLS:
                 state = await self._handle_processing_tools_state(agent_data)
@@ -181,6 +178,12 @@ class ToolAgentLoop(AgentLoopBase):
             else:
                 logger.error(f"Invalid state: {state}")
                 state = AgentState.TERMINATED
+            
+            if state == AgentState.TERMINATED:
+                if processing_tool:
+                    print('### Finished processing tools' )
+                else:
+                    print('### Did not process any tool calls')
 
         # Finalize output
         response_ids = agent_data.prompt_ids[-len(agent_data.response_mask) :]
@@ -203,7 +206,7 @@ class ToolAgentLoop(AgentLoopBase):
             routed_experts=agent_data.routed_experts,
             extra_fields={},
         )
-        output.extra_fields.update({"turn_scores": agent_data.turn_scores, "tool_rewards": agent_data.tool_rewards, "tool_calls": [tool_call.model_dump() for tool_call in agent_data.tool_calls]})
+        output.extra_fields.update({"turn_scores": agent_data.turn_scores, "tool_rewards": agent_data.tool_rewards, "tool_calls": [tool_call.model_dump() for tool_call in agent_data.all_tool_calls]})
         return output
 
     async def _handle_pending_state(self, agent_data: AgentData, sampling_params: dict[str, Any]) -> AgentState:
@@ -258,6 +261,7 @@ class ToolAgentLoop(AgentLoopBase):
 
         # Extract tool calls
         _, agent_data.tool_calls = await self.tool_parser.extract_tool_calls(agent_data.response_ids)
+        agent_data.all_tool_calls.extend(agent_data.tool_calls)  # Keep track of all tool calls
         
         # Handle interaction if needed
         if self.interaction_config_file:
