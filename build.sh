@@ -65,7 +65,8 @@ echo "========================================"
 echo "Installing inference frameworks"
 echo "========================================"
 
-export USE_MEGATRON=0
+USE_MEGATRON=0 \ 
+USE_SGLANG=0  \ 
 bash scripts/install_vllm_sglang_mcore.sh
 
 echo "========================================"
@@ -74,14 +75,7 @@ echo "========================================"
 
 pip install --no-deps -e .
 
-pip install flash-attn==2.8.1 --no-build-isolation
-pip install numpy==2.2.6
-
-echo "========================================"
-echo "If you need pyext (Python 3.11 fork)"
-echo "========================================"
-
-pip install git+https://github.com/ShaohonChen/PyExt.git@py311support || true
+pip install --no-build-isolation -r ../requirements.txt
 
 echo "========================================"
 echo "Installation Complete"
