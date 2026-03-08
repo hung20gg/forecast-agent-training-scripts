@@ -92,44 +92,37 @@ class MCPToolWithExtraInfo(BaseTool):
 
         extra_fields = kwargs.get("extra_fields", {})
         addition_text = ""
-        if extra_fields:
-            time_asked = extra_fields.get("time_asked") # E.g: 2025-08-31 00:00:00
-            time_asked_date = datetime.strptime(time_asked, "%Y-%m-%d %H:%M:%S") if time_asked else None
 
-            for key in parameters.keys():
+        # Resolve time_asked_date from extra_fields (may be None if not provided)
+        time_asked = extra_fields.get("time_asked") if extra_fields else None  # E.g: 2025-08-31 00:00:00
+        time_asked_date = datetime.strptime(time_asked, "%Y-%m-%d %H:%M:%S") if time_asked else None
+
+        if time_asked_date:
+            for key in list(parameters.keys()):
                 if 'date' in key.lower() and isinstance(parameters[key], str):
-                    print(f"### Datetime parameter detected: {key} with value {parameters[key]}")
+                    logger.info(f"### Datetime parameter detected: {key} with value {parameters[key]}")
 
-                # Reject queries that ask for data beyond the time we have access to, and add extra info in the response if the query is close to the time limit. This is a common scenario for tools that provide real-time or near-real-time data, where the tool's data may only be updated up to a certain point in time. By checking the query parameters against the time limit, we can provide more accurate and helpful responses to users, and avoid confusion or frustration caused by queries that cannot be fulfilled due to data limitations.
+                # Reject queries that ask for data beyond the time we have access to.
                 if key == "start_date" and isinstance(parameters[key], str):
                     try:
                         temp_date = datetime.strptime(parameters[key], "%Y-%m-%d")
-
-                        if time_asked_date and temp_date < time_asked_date:
+                        if temp_date > time_asked_date:
                             text = f"[ERROR] Data only available up to {time_asked_date.strftime('%Y-%m-%d')}, but the query asked for {parameters[key]}. Only fetch up to {time_asked_date.strftime('%Y-%m-%d')}.\n\n"
                             print(f"### {text}")
                             return ToolResponse(text=text), -1.0, {"api_request_error": text}
-                        print(f"### Datetime parameter {key} with value {parameters[key]} is valid for the query time {time_asked}")
                     except ValueError:
                         logger.warning(f"Failed to parse date from parameter {key} with value {parameters[key]}")
-                        continue
-                
-                # Limit the end_date to be no later than the time we have access to, and add extra info in the response if the query is close to the time limit. Similar to the start_date, this check helps ensure that users are aware of the data limitations and can adjust their queries accordingly, while still providing as much relevant information as possible when queries approach the time limit. This can enhance user experience by setting clear expectations about data availability and preventing confusion or frustration caused by queries that cannot be fulfilled due to data limitations.
+
+                # Clamp end_date to not exceed time_asked_date.
                 if key == "end_date" and isinstance(parameters[key], str):
                     try:
                         temp_date = datetime.strptime(parameters[key], "%Y-%m-%d")
-
-                        if time_asked_date and temp_date < time_asked_date:
+                        if temp_date > time_asked_date:
                             addition_text = f"[WARNING] Data only available up to {time_asked_date.strftime('%Y-%m-%d')}, but the query asked for {parameters[key]}. Only fetch up to {time_asked_date.strftime('%Y-%m-%d')}.\n\n"
-                            print(f"### {addition_text}")
-                            parameters[key] = time_asked_date.strftime("%Y-%m-%d %H:%M:%S")
-                        else:
-                            print(f"### Datetime parameter {key} with value {parameters[key]} is valid for the query time {time_asked}")
+                            parameters[key] = time_asked_date.strftime("%Y-%m-%d")
 
                     except ValueError:
                         logger.warning(f"Failed to parse date from parameter {key} with value {parameters[key]}")
-                        continue
-
 
         try:
             result_text, metadata = await self._call_tool(instance_id, parameters)

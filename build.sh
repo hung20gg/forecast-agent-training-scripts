@@ -3,7 +3,7 @@
 set -e  # stop on error
 
 ENV_NAME="verl"
-PYTHON_VERSION="3.11"
+PYTHON_VERSION="3.12"
 
 echo "========================================"
 echo "Initializing Conda"
@@ -18,16 +18,11 @@ fi
 source "$(conda info --base)/etc/profile.d/conda.sh"
 
 echo "========================================"
-echo "Removing old environment (if exists)"
+echo "Creating environment (if not exists)"
 echo "========================================"
 
-conda remove -y -n $ENV_NAME --all || true
+conda create -y -n $ENV_NAME python=$PYTHON_VERSION 2>/dev/null || true
 
-echo "========================================"
-echo "Creating environment"
-echo "========================================"
-
-conda create -y -n $ENV_NAME python=$PYTHON_VERSION
 
 echo "========================================"
 echo "Activating environment"
@@ -73,7 +68,7 @@ echo "========================================"
 
 pip install --no-deps -e .
 
-pip install --no-build-isolation -r ../requirements.txt
+pip install -r ../requirements.txt
 
 echo "========================================"
 echo "Installation Complete"

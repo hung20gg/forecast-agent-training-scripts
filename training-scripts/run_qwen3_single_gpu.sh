@@ -12,7 +12,7 @@ size=${SIZE:-"micro"} # small, medium, large
 
 if [ "$size" == "micro" ]; then
     echo "Downloading a small subset of the dataset for quick testing..."
-    python "$PROJECT_DIR/training-scripts/download.py" --local_save_dir $DATASET_DIR --limit_rows 500
+    python "$PROJECT_DIR/training-scripts/download.py" --local_save_dir $DATASET_DIR --limit_rows 50
 
 else
     python "$PROJECT_DIR/training-scripts/download.py" --local_save_dir $DATASET_DIR

@@ -1,3 +1,2 @@
-flash-attn==2.8.1
 numpy==2.2.6
 fastmcp

@@ -9,8 +9,8 @@ defaults:
 data:
   train_files: ~/data/financial-dataset/train.parquet
   val_files: ~/data/financial-dataset/test.parquet
-  max_prompt_length: 64000
-  max_response_length: 16000
+  max_prompt_length: 6400
+  max_response_length: 1600
   shuffle: True
   train_batch_size: 16
   return_raw_chat: True
@@ -95,7 +95,8 @@ actor_rollout_ref:
     top_p: 1
     # for vllm rollout
     dtype: bfloat16 # should align with FSDP
-    gpu_memory_utilization: 0.5
+    gpu_memory_utilization: 0.2
+    max_model_len: 8192
     ignore_eos: False
     enforce_eager: True
     free_cache_engine: True
