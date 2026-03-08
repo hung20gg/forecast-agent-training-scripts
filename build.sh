@@ -65,9 +65,7 @@ echo "========================================"
 echo "Installing inference frameworks"
 echo "========================================"
 
-USE_MEGATRON=0 \ 
-USE_SGLANG=0  \ 
-bash scripts/install_vllm_sglang_mcore.sh
+USE_MEGATRON=0 USE_SGLANG=0 bash scripts/install_vllm_sglang_mcore.sh
 
 echo "========================================"
 echo "Installing editable package"

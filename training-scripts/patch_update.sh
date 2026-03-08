@@ -9,9 +9,17 @@ cp "$SOURCE" "$TARGET"
 echo "Patched: $TARGET"
 
 
-# SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# TARGET="$SCRIPT_DIR/../verl/verl/experimental/agent_loop/tool_agent_loop.py"
-# SOURCE="$SCRIPT_DIR/patch/tool_agent_loop.py"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TARGET="$SCRIPT_DIR/../verl/verl/experimental/agent_loop/tool_agent_loop.py"
+SOURCE="$SCRIPT_DIR/patch/tool_agent_loop.py"
 
-# cp "$SOURCE" "$TARGET"
-# echo "Patched: $TARGET"
+cp "$SOURCE" "$TARGET"
+echo "Patched: $TARGET"
+
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TARGET="$SCRIPT_DIR/../verl/verl/tools/mcp_tool_with_extra_info.py"
+SOURCE="$SCRIPT_DIR/patch/mcp_tool_with_extra_info.py"
+
+cp "$SOURCE" "$TARGET"
+echo "Patched: $TARGET"

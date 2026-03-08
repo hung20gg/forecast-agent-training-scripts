@@ -38,6 +38,10 @@ if __name__ == "__main__":
         "--local_save_dir", default="~/data/financial-dataset", help="The save directory for the preprocessed dataset."
     )
 
+    parser.add_argument(
+        "--limit_rows", type=int, default=None, help="Limit the number of rows to process for both train and test datasets."
+    )
+
     args = parser.parse_args()
     local_dataset_path = args.local_dataset_path
 
@@ -50,6 +54,10 @@ if __name__ == "__main__":
 
     train_dataset = dataset["train"]
     test_dataset = dataset["test"]
+
+    if args.limit_rows is not None:
+        train_dataset = train_dataset.select(range(args.limit_rows))
+        test_dataset = test_dataset.select(range(args.limit_rows))
 
     # add a row to each data item that represents a unique id
     def make_map_fn(split):

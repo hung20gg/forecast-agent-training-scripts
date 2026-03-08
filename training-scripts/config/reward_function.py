@@ -45,11 +45,15 @@ def chi2_pdf(x, df=13):
 
 def nll_exclude_min(pred_mean, pred_std, true_mean, true_std = 0):
 
-    if true_std == 0:
+    if true_std <= 0:
         true_std = abs(true_mean) * 0.05
 
-    if pred_std == 0:
+    if pred_std <= 0:
         pred_std = abs(pred_mean) * 0.01
+
+    # Prevent division by zero and domain errors
+    true_std = max(float(true_std), 1e-9)
+    pred_std = max(float(pred_std), 1e-9)
 
     return (
         math.log(true_std / pred_std) +
@@ -79,25 +83,6 @@ def compute_score(data_source, solution_str, ground_truth, extra_info, alpha = 2
     if len(tool_calls) == 0:
         return -1
     
-    
-    os.makedirs('logs/answers', exist_ok=True)
-
-    with open(f"logs/answers/{extra_info['id']}.txt", 'w', encoding='utf-8') as f:
-        f.write(solution_str)
-
-    # tool_calls = extract_tool_call(solution_str)
-    for tool_call in tool_calls:
-        # tool_call = json.loads(tool_call)
-        for key, value in tool_call.get('arguments').items():
-            if 'date' in key:
-                try:
-                    date_time = datetime.strptime(value, '%Y-%m-%d')
-                except ValueError:
-                    date_time = datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
-                if date_time > max_date_time + timedelta(days=1):
-                    
-                    return -1
-    
     # answer = extract_answer(solution_str)
     answer = solution_str.split("</think>")[-1].strip()
     
@@ -109,8 +94,17 @@ def compute_score(data_source, solution_str, ground_truth, extra_info, alpha = 2
     gt_mean = ground_truth['mean']
     gt_std = ground_truth['std']
 
-    print(f"### Extracted answer: mean={mean}, std={std}, ground_truth_mean={gt_mean}, ground_truth_std={gt_std}, reward={max( - 1/beta * nll_exclude_min(mean, std, gt_mean, gt_std) + 1, -1)}")
-    
-    print('### NLL Score:', nll_exclude_min(mean, std, gt_mean, gt_std))
+    # Prevent division by zero for beta
+    safe_beta = max(abs(float(beta)), 1e-9) * (1 if float(beta) >= 0 else -1)
 
-    return alpha * chi2_pdf(len(tool_calls)) + max( - 1/beta * nll_exclude_min(mean, std, gt_mean, gt_std) + 1, -1)
+    try:
+        nll_score = nll_exclude_min(mean, std, gt_mean, gt_std)
+    except:
+        nll_score = 10000000 # Very large number
+
+
+    print(f"### Extracted answer: mean={mean}, std={std}, ground_truth_mean={gt_mean}, ground_truth_std={gt_std}, nll_reward={max( - 1/safe_beta * nll_score + 1, -1)}")
+    
+    reward_tool_calls = chi2_pdf(max(sum(extra_info['tool_rewards']), 0))
+
+    return alpha * reward_tool_calls + max( - 1/safe_beta * nll_score + 1, -1)

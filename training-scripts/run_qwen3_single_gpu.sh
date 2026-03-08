@@ -8,7 +8,16 @@ CONFIG_PATH="$PROJECT_DIR/training-scripts/config"
 
 DATASET_DIR="$HOME/data/finance"
 
-python "$PROJECT_DIR/training-scripts/download.py" --local_save_dir $DATASET_DIR
+size=${SIZE:-"micro"} # small, medium, large
+
+if [ "$size" == "micro" ]; then
+    echo "Downloading a small subset of the dataset for quick testing..."
+    python "$PROJECT_DIR/training-scripts/download.py" --local_save_dir $DATASET_DIR --limit_rows 500
+
+else
+    python "$PROJECT_DIR/training-scripts/download.py" --local_save_dir $DATASET_DIR
+
+fi
 
 financial_train_path="$DATASET_DIR/train.parquet"
 financial_test_path="$DATASET_DIR/test.parquet"
@@ -16,7 +25,6 @@ financial_test_path="$DATASET_DIR/test.parquet"
 train_files="['$financial_train_path']"
 test_files="['$financial_test_path']"
 
-size=${SIZE:-"micro"} # small, medium, large
 
 function now() {
     date '+%d-%H-%M'
