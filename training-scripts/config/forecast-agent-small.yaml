@@ -98,8 +98,8 @@ actor_rollout_ref:
     enforce_eager: True
     free_cache_engine: True
     tensor_model_parallel_size: 1
-    max_num_batched_tokens: 8192
-    max_num_seqs: 1024
+    max_num_batched_tokens: 16000
+    max_num_seqs: 64
     do_sample: True
     engine_kwargs: # inference engine parameters, please refer vllm/sglang official doc for detail
       vllm: 
