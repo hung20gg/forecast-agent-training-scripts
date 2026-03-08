@@ -66,6 +66,8 @@ echo "========================================"
 echo "Installing editable package"
 echo "========================================"
 
+pip install transformers==4.57.6
+
 pip install --no-deps -e .
 
 pip install -r ../requirements.txt
