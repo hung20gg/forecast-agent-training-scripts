@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# Login to Weights & Biases (wandb) for experiment tracking
+wandb login
+
 # Defaults
 SIZE="small"
 MULTI_GPU=0
