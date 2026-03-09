@@ -76,7 +76,7 @@ actor_rollout_ref:
       wrap_policy:
         # transformer_layer_cls_to_wrap: None
         min_num_params: 0
-      log_prob_micro_batch_size_per_gpu: 16
+    log_prob_micro_batch_size_per_gpu: 16
 
   rollout:
     name: vllm
