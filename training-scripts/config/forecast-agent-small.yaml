@@ -82,7 +82,7 @@ actor_rollout_ref:
     mode: async
     multi_turn:
       enable: True
-      max_user_turns: 20
+      max_user_turns: 10
       tool_config_path: ./training-scripts/config/tool_config/mcp_config.yaml # path to the tool config file, only needed when max_user_turns > 0
     
     agent:
@@ -93,13 +93,13 @@ actor_rollout_ref:
     top_p: 1
     # for vllm rollout
     dtype: bfloat16 # should align with FSDP
-    gpu_memory_utilization: 0.3
+    gpu_memory_utilization: 0.1
     ignore_eos: False
     enforce_eager: True
     free_cache_engine: True
     tensor_model_parallel_size: 1
     max_num_batched_tokens: 16000
-    max_model_len: 64000
+    max_model_len: 32000
     max_num_seqs: 64
     do_sample: True
     engine_kwargs: # inference engine parameters, please refer vllm/sglang official doc for detail
