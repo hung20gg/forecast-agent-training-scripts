@@ -35,11 +35,7 @@ actor_rollout_ref:
     lora_rank: 32
     lora_alpha: 64
 
-    target_modules:
-      - q_proj
-      - k_proj
-      - v_proj
-      - o_proj
+    target_modules: all-linear
 
   actor:
     strategy: fsdp
