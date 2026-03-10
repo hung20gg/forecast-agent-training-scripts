@@ -9,125 +9,141 @@ defaults:
 data:
   train_files: ~/data/financial-dataset/train.parquet
   val_files: ~/data/financial-dataset/test.parquet
-  max_prompt_length: 2000
+
+  max_prompt_length: 6000
   max_response_length: 8000
-  shuffle: True
+
+  shuffle: true
   train_batch_size: 64
-  return_raw_chat: True
+  return_raw_chat: true
 
 algorithm:
   adv_estimator: grpo
 
 actor_rollout_ref:
-  hybrid_engine: True
+  hybrid_engine: true
+
   model:
-    # path: Qwen/Qwen3-4B-Thinking-2507
     path: Qwen/Qwen3-1.7B
-    enable_gradient_checkpointing: True
-    enable_activation_offload: False
-    trust_remote_code: True
-    use_remove_padding: True
+
+    enable_gradient_checkpointing: true
+    enable_activation_offload: true
+
+    trust_remote_code: true
+    use_remove_padding: true
 
     lora_rank: 32
     lora_alpha: 64
+
     target_modules:
       - q_proj
       - k_proj
       - v_proj
       - o_proj
-  
+
   actor:
-    strategy: fsdp  # This is for backward-compatibility
+    strategy: fsdp
+
     ppo_mini_batch_size: 32
-    ppo_micro_batch_size: null # will be deprecated, use ppo_micro_batch_size_per_gpu
+    ppo_micro_batch_size: null
     ppo_micro_batch_size_per_gpu: 4
-    use_dynamic_bsz: True
-    ppo_max_token_len_per_gpu: 40000 # n * ${data.max_prompt_length} + ${data.max_response_length}
+
+    use_dynamic_bsz: true
+
+    # increased token budget
+    ppo_max_token_len_per_gpu: 48000
+
     grad_clip: 1.0
     clip_ratio: 0.2
     entropy_coeff: 0.0
-    use_kl_loss: True # True for GRPO
-    kl_loss_coef: 0.001 # for grpo
-    kl_loss_type: low_var_kl # for grpo
-    # Rollout Correction (corrects distribution mismatch between rollout and training)
-    use_torch_compile: False # False to disable torch compile
+
+    use_kl_loss: true
+    kl_loss_coef: 0.001
+    kl_loss_type: low_var_kl
+
+    use_torch_compile: false
 
     ppo_epochs: 1
     data_loader_seed: null
     shuffle: true
-    
-    optim:
-      lr: 2e-5
-            
 
-      lr_warmup_steps: -1 # Prioritized. Negative values mean delegating to lr_warmup_steps_ratio.
-      lr_warmup_steps_ratio: 0.05  # the total steps will be injected during runtime
-      min_lr_ratio: 0.0   # only used with cosine lr scheduler, default to 0.0
-      num_cycles: 0.5     # only used with cosine lr scheduler, default to 0.5
-      lr_scheduler_type: cosine  # select from constant/cosine
-      total_training_steps: -1  # must be override by program
-    
+    optim:
+      lr: 1e-5
+      lr_warmup_steps: -1
+      lr_warmup_steps_ratio: 0.05
+      min_lr_ratio: 0.0
+      num_cycles: 0.5
+      lr_scheduler_type: cosine
+      total_training_steps: -1
+
     fsdp_config:
-      param_offload: False
-      optimizer_offload: False
+      param_offload: false
+      optimizer_offload: false
       fsdp_size: -1
+
     checkpoint:
-      # What to include in saved checkpoints
-      # with 'hf_model' you can save whole model as hf format, now only use sharded model checkpoint to save space
-      save_contents: ['model', 'extra']
-      # For more flexibility, you can specify the contents to load from the checkpoint.
+      save_contents: ["model", "extra"]
       load_contents: ${actor_rollout_ref.actor.checkpoint.save_contents}
+
   ref:
     fsdp_config:
-      param_offload: False
+      param_offload: false
       wrap_policy:
-        # transformer_layer_cls_to_wrap: None
         min_num_params: 0
-    log_prob_micro_batch_size_per_gpu: 4 # should be aligned with actor's ppo_micro_batch_size_per_gpu for better performance
+
+    log_prob_micro_batch_size_per_gpu: 4
 
   rollout:
     name: vllm
     mode: async
+
     multi_turn:
-      enable: True
+      enable: true
       max_user_turns: 10
-      tool_config_path: ./training-scripts/config/tool_config/mcp_config.yaml # path to the tool config file, only needed when max_user_turns > 0
-    
+      tool_config_path: ./training-scripts/config/tool_config/mcp_config.yaml
+
     agent:
       default_agent_loop: tool_agent
 
     temperature: 0.7
-    top_k: -1 # 0 for hf rollout, -1 for vllm rollout
+    top_k: -1
     top_p: 1
-    # for vllm rollout
-    dtype: bfloat16 # should align with FSDP
-    gpu_memory_utilization: 0.2
-    ignore_eos: False
-    enforce_eager: True
-    free_cache_engine: True
+
+    dtype: bfloat16
+
+    gpu_memory_utilization: 0.7
+
+    ignore_eos: false
+    enforce_eager: true
+    free_cache_engine: true
+
     tensor_model_parallel_size: 1
-    max_num_batched_tokens: 8192
-    max_model_len: 32000
+
+    # increased context
+    max_model_len: 48000
+    max_num_batched_tokens: 16000
     max_num_seqs: 64
-    do_sample: True
-    engine_kwargs: # inference engine parameters, please refer vllm/sglang official doc for detail
-      vllm: 
-        disable_mm_preprocessor_cache: True
+
+    do_sample: true
+
+    engine_kwargs:
+      vllm:
+        disable_mm_preprocessor_cache: true
       sglang: {}
 
-    log_prob_micro_batch_size_per_gpu: 4 # should be aligned with ref's log_prob_micro_batch_size_per_gpu for better performance
+    log_prob_micro_batch_size_per_gpu: 4
 
-    n: 4 # for each prompt, sample n responses (i.e. num sample times). set it to values > 1 for grpo, rloo
-    calculate_log_probs: True # set to True for computing log probs via rollouts
+    n: 4
+    calculate_log_probs: true
 
 reward_model:
-  enable: False
+  enable: false
 
 trainer:
   project_name: finance-grpo
   run_name: qwen3-1.7b
   total_epochs: 3
-  logger: ["console","wandb"]
+  logger: ["console", "wandb"]
 
 custom_reward_function:
   path: ./training-scripts/config/reward_function.py
