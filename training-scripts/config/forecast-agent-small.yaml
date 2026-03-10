@@ -9,10 +9,10 @@ defaults:
 data:
   train_files: ~/data/financial-dataset/train.parquet
   val_files: ~/data/financial-dataset/test.parquet
-  max_prompt_length: 64000
-  max_response_length: 16000
+  max_prompt_length: 2000
+  max_response_length: 8000
   shuffle: True
-  train_batch_size: 32
+  train_batch_size: 64
   return_raw_chat: True
 
 algorithm:
@@ -30,15 +30,19 @@ actor_rollout_ref:
 
     lora_rank: 32
     lora_alpha: 64
-    target_modules: all-linear
+    target_modules:
+      - q_proj
+      - k_proj
+      - v_proj
+      - o_proj
   
   actor:
     strategy: fsdp  # This is for backward-compatibility
     ppo_mini_batch_size: 32
     ppo_micro_batch_size: null # will be deprecated, use ppo_micro_batch_size_per_gpu
-    ppo_micro_batch_size_per_gpu: 16
-    use_dynamic_bsz: False
-    ppo_max_token_len_per_gpu: 16384 # n * ${data.max_prompt_length} + ${data.max_response_length}
+    ppo_micro_batch_size_per_gpu: 4
+    use_dynamic_bsz: True
+    ppo_max_token_len_per_gpu: 40000 # n * ${data.max_prompt_length} + ${data.max_response_length}
     grad_clip: 1.0
     clip_ratio: 0.2
     entropy_coeff: 0.0
@@ -53,7 +57,7 @@ actor_rollout_ref:
     shuffle: true
     
     optim:
-      lr: 1e-4
+      lr: 2e-5
             
 
       lr_warmup_steps: -1 # Prioritized. Negative values mean delegating to lr_warmup_steps_ratio.
@@ -79,7 +83,7 @@ actor_rollout_ref:
       wrap_policy:
         # transformer_layer_cls_to_wrap: None
         min_num_params: 0
-    log_prob_micro_batch_size_per_gpu: 16 # should be aligned with actor's ppo_micro_batch_size_per_gpu for better performance
+    log_prob_micro_batch_size_per_gpu: 4 # should be aligned with actor's ppo_micro_batch_size_per_gpu for better performance
 
   rollout:
     name: vllm
@@ -111,7 +115,7 @@ actor_rollout_ref:
         disable_mm_preprocessor_cache: True
       sglang: {}
 
-    log_prob_micro_batch_size_per_gpu: 16 # should be aligned with ref's log_prob_micro_batch_size_per_gpu for better performance
+    log_prob_micro_batch_size_per_gpu: 4 # should be aligned with ref's log_prob_micro_batch_size_per_gpu for better performance
 
     n: 4 # for each prompt, sample n responses (i.e. num sample times). set it to values > 1 for grpo, rloo
     calculate_log_probs: True # set to True for computing log probs via rollouts
