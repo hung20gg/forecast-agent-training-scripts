@@ -15,7 +15,7 @@ if [ "$size" == "micro" ]; then
     python "$PROJECT_DIR/training-scripts/download.py" --local_save_dir $DATASET_DIR --limit_rows 50
 
 else
-    python "$PROJECT_DIR/training-scripts/download.py" --local_save_dir $DATASET_DIR --limit_rows 257
+    python "$PROJECT_DIR/training-scripts/download.py" --local_save_dir $DATASET_DIR
 
 fi
 
