@@ -13,7 +13,7 @@ data:
   max_prompt_length: 64000
   max_response_length: 16000
   shuffle: True
-  train_batch_size: 256
+  train_batch_size: 64
   return_raw_chat: True
 
 algorithm:
@@ -28,12 +28,16 @@ actor_rollout_ref:
     enable_activation_offload: False
     trust_remote_code: True
     use_remove_padding: False
+
+    lora_rank: 64
+    lora_alpha: 128
+    target_modules: all-linear
   
   actor:
     strategy: fsdp  # This is for backward-compatibility
-    ppo_mini_batch_size: 256
+    ppo_mini_batch_size: 64
     ppo_micro_batch_size: null # will be deprecated, use ppo_micro_batch_size_per_gpu
-    ppo_micro_batch_size_per_gpu: 4
+    ppo_micro_batch_size_per_gpu: 16
     use_dynamic_bsz: False
     ppo_max_token_len_per_gpu: 16384 # n * ${data.max_prompt_length} + ${data.max_response_length}
     grad_clip: 1.0
@@ -50,7 +54,7 @@ actor_rollout_ref:
     shuffle: true
     
     optim:
-      lr: 1e-6
+      lr: 3e-5
 
 
       lr_warmup_steps: -1 # Prioritized. Negative values mean delegating to lr_warmup_steps_ratio.
@@ -76,7 +80,7 @@ actor_rollout_ref:
       wrap_policy:
         # transformer_layer_cls_to_wrap: None
         min_num_params: 0
-    log_prob_micro_batch_size_per_gpu: 8
+    log_prob_micro_batch_size_per_gpu: 16
 
   rollout:
     name: vllm
@@ -101,14 +105,14 @@ actor_rollout_ref:
     free_cache_engine: True
     tensor_model_parallel_size: 1
     max_model_len: 64000
-    max_num_batched_tokens: 16000
+    max_num_batched_tokens: 8192
     do_sample: True
     engine_kwargs: # inference engine parameters, please refer vllm/sglang official doc for detail
       vllm: 
         disable_mm_preprocessor_cache: True
       sglang: {}
 
-    log_prob_micro_batch_size_per_gpu: 8
+    log_prob_micro_batch_size_per_gpu: 16
 
     n: 5 # for each prompt, sample n responses (i.e. num sample times). set it to values > 1 for grpo, rloo
     calculate_log_probs: True # set to True for computing log probs via rollouts

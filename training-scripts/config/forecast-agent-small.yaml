@@ -27,12 +27,16 @@ actor_rollout_ref:
     enable_activation_offload: False
     trust_remote_code: True
     use_remove_padding: True
+
+    lora_rank: 32
+    lora_alpha: 64
+    target_modules: all-linear
   
   actor:
     strategy: fsdp  # This is for backward-compatibility
     ppo_mini_batch_size: 32
     ppo_micro_batch_size: null # will be deprecated, use ppo_micro_batch_size_per_gpu
-    ppo_micro_batch_size_per_gpu: 2
+    ppo_micro_batch_size_per_gpu: 16
     use_dynamic_bsz: False
     ppo_max_token_len_per_gpu: 16384 # n * ${data.max_prompt_length} + ${data.max_response_length}
     grad_clip: 1.0
@@ -49,7 +53,7 @@ actor_rollout_ref:
     shuffle: true
     
     optim:
-      lr: 1e-6
+      lr: 1e-4
             
 
       lr_warmup_steps: -1 # Prioritized. Negative values mean delegating to lr_warmup_steps_ratio.
@@ -75,7 +79,7 @@ actor_rollout_ref:
       wrap_policy:
         # transformer_layer_cls_to_wrap: None
         min_num_params: 0
-    log_prob_micro_batch_size_per_gpu: 4 # should be aligned with actor's ppo_micro_batch_size_per_gpu for better performance
+    log_prob_micro_batch_size_per_gpu: 16 # should be aligned with actor's ppo_micro_batch_size_per_gpu for better performance
 
   rollout:
     name: vllm
@@ -98,7 +102,7 @@ actor_rollout_ref:
     enforce_eager: True
     free_cache_engine: True
     tensor_model_parallel_size: 1
-    max_num_batched_tokens: 16000
+    max_num_batched_tokens: 8192
     max_model_len: 32000
     max_num_seqs: 64
     do_sample: True
@@ -107,9 +111,9 @@ actor_rollout_ref:
         disable_mm_preprocessor_cache: True
       sglang: {}
 
-    log_prob_micro_batch_size_per_gpu: 4 # should be aligned with ref's log_prob_micro_batch_size_per_gpu for better performance
+    log_prob_micro_batch_size_per_gpu: 16 # should be aligned with ref's log_prob_micro_batch_size_per_gpu for better performance
 
-    n: 5 # for each prompt, sample n responses (i.e. num sample times). set it to values > 1 for grpo, rloo
+    n: 4 # for each prompt, sample n responses (i.e. num sample times). set it to values > 1 for grpo, rloo
     calculate_log_probs: True # set to True for computing log probs via rollouts
 
 reward_model:
