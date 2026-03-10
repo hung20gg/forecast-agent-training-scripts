@@ -51,7 +51,7 @@ actor_rollout_ref:
     use_dynamic_bsz: true
 
     # increased token budget
-    ppo_max_token_len_per_gpu: 48000
+    ppo_max_token_len_per_gpu: 40000
 
     grad_clip: 1.0
     clip_ratio: 0.2
@@ -120,7 +120,7 @@ actor_rollout_ref:
     tensor_model_parallel_size: 1
 
     # increased context
-    max_model_len: 48000
+    max_model_len: 40000
     max_num_batched_tokens: 16000
     max_num_seqs: 64
 
