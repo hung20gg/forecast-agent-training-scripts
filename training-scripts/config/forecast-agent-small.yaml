@@ -10,8 +10,8 @@ data:
   train_files: ~/data/financial-dataset/train.parquet
   val_files: ~/data/financial-dataset/test.parquet
 
-  max_prompt_length: 6000
-  max_response_length: 8000
+  max_prompt_length: 4000
+  max_response_length: 16000
 
   shuffle: true
   train_batch_size: 64
@@ -107,7 +107,7 @@ actor_rollout_ref:
 
     dtype: bfloat16
 
-    gpu_memory_utilization: 0.7
+    gpu_memory_utilization: 0.5
 
     ignore_eos: false
     enforce_eager: true

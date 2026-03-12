@@ -63,7 +63,7 @@ def nll_exclude_min(pred_mean, pred_std, true_mean, true_std = 0):
     )
 
 
-def compute_score(data_source, solution_str, ground_truth, extra_info, alpha = 2, beta = 2):
+def compute_score(data_source, solution_str, ground_truth, extra_info, alpha = 2, beta = 0.1):
 
     # Extra infos:
     # {
@@ -95,7 +95,6 @@ def compute_score(data_source, solution_str, ground_truth, extra_info, alpha = 2
     gt_std = ground_truth['std']
 
     # Prevent division by zero for beta
-    safe_beta = max(abs(float(beta)), 1e-9) * (1 if float(beta) >= 0 else -1)
 
     try:
         nll_score = nll_exclude_min(mean, std, gt_mean, gt_std)
@@ -103,8 +102,8 @@ def compute_score(data_source, solution_str, ground_truth, extra_info, alpha = 2
         nll_score = 10000000 # Very large number
 
 
-    print(f"### Extracted answer: mean={mean}, std={std}, ground_truth_mean={gt_mean}, ground_truth_std={gt_std}, nll_reward={max( - 1/safe_beta * nll_score + 1, -1)}")
+    print(f"### Extracted answer: mean={mean}, std={std}, ground_truth_mean={gt_mean}, ground_truth_std={gt_std}, nll_reward={max( - beta * nll_score + 1, -1)}")
     
     reward_tool_calls = chi2_pdf(max(sum(extra_info['tool_rewards']), 0))
 
-    return alpha * reward_tool_calls + max( - 1/safe_beta * nll_score + 1, -1)
+    return alpha * reward_tool_calls + max( - beta * nll_score + 1, -1)
