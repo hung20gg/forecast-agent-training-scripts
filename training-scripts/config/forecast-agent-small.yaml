@@ -40,9 +40,9 @@ actor_rollout_ref:
   actor:
     strategy: fsdp
 
-    ppo_mini_batch_size: 32
+    ppo_mini_batch_size: 16
     ppo_micro_batch_size: null
-    ppo_micro_batch_size_per_gpu: 4
+    ppo_micro_batch_size_per_gpu: 1
 
     use_dynamic_bsz: true
 
@@ -87,7 +87,7 @@ actor_rollout_ref:
       wrap_policy:
         min_num_params: 0
 
-    log_prob_micro_batch_size_per_gpu: 4
+    log_prob_micro_batch_size_per_gpu: 1
 
   rollout:
     name: vllm
@@ -127,7 +127,7 @@ actor_rollout_ref:
         disable_mm_preprocessor_cache: true
       sglang: {}
 
-    log_prob_micro_batch_size_per_gpu: 4
+    log_prob_micro_batch_size_per_gpu: 1
 
     n: 4
     calculate_log_probs: true
