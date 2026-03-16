@@ -92,6 +92,7 @@ class MCPToolWithExtraInfo(BaseTool):
 
         extra_fields = kwargs.get("extra_fields", {})
         addition_text = ""
+        score = 1
 
         # Resolve time_asked_date from extra_fields (may be None if not provided)
         time_asked = extra_fields.get("time_asked") if extra_fields else None  # E.g: 2025-08-31 00:00:00
@@ -120,7 +121,7 @@ class MCPToolWithExtraInfo(BaseTool):
                         if temp_date > time_asked_date:
                             addition_text = f"[WARNING] Data only available up to {time_asked_date.strftime('%Y-%m-%d')}, but the query asked for {parameters[key]}. Only fetch up to {time_asked_date.strftime('%Y-%m-%d')}.\n\n"
                             parameters[key] = time_asked_date.strftime("%Y-%m-%d")
-
+                            score = 0.75  # Partial score for clamping the date
                     except ValueError:
                         logger.warning(f"Failed to parse date from parameter {key} with value {parameters[key]}")
 
@@ -138,7 +139,7 @@ class MCPToolWithExtraInfo(BaseTool):
                 "api_request_error": metadata.get("api_request_error"),
             }
 
-            return ToolResponse(text=addition_text + result_text), 1.0, metrics
+            return ToolResponse(text=addition_text + result_text), score, metrics
 
         except Exception as e:
             error_result = json.dumps({"result": f"Tool execution failed: {e}"})

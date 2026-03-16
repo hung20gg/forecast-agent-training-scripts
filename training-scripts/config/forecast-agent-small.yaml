@@ -74,7 +74,7 @@ actor_rollout_ref:
 
     fsdp_config:
       param_offload: false
-      optimizer_offload: false
+      optimizer_offload: true
       fsdp_size: -1
 
     checkpoint:

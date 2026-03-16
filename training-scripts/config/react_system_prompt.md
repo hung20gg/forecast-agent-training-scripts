@@ -101,7 +101,7 @@ $
 \boxed{{Point Estimate}} \pm \boxed{{Standard Deviation}}
 $
 
-In which the point estimate is your best guess for the most likely outcome, and the standard deviation represents the uncertainty around that estimate. Both values should be numeric and in the same units as the metric being forecasted.
+In which the point estimate is your best guess for the most likely outcome, and the standard deviation represents the uncertainty around that estimate. Both values should be numeric and in the same units as the metric being forecasted. DO NOT use percentage format for the standard deviation.
 
 (5) Risks & Monitoring Signals
 

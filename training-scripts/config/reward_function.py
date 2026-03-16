@@ -4,6 +4,7 @@ import math
 from datetime import datetime, timedelta
 import json
 from uuid import uuid4
+import numpy as np
 
 # Extract <answer> ... </answer> from the response
 def extract_answer(response: str) -> str:
@@ -77,10 +78,10 @@ def compute_score(data_source, solution_str, ground_truth, extra_info, alpha = 2
     # }
 
     max_date_time = datetime.strptime(extra_info['time_asked'], '%Y-%m-%d %H:%M:%S')
-    tool_calls = extra_info['tool_calls']
+    tool_rewards = extra_info['tool_rewards']
 
     # If the agent does not call any tool, it is likely that the agent does not know how to solve the problem, thus we give a reward of -1 to encourage the agent to call tools in future.
-    if len(tool_calls) == 0:
+    if len(tool_rewards) == 0:
         return -1
     
     # answer = extract_answer(solution_str)
@@ -104,6 +105,6 @@ def compute_score(data_source, solution_str, ground_truth, extra_info, alpha = 2
 
     print(f"### Extracted answer: mean={mean}, std={std}, ground_truth_mean={gt_mean}, ground_truth_std={gt_std}, nll_reward={max( - beta * nll_score + 1, -1)}")
     
-    reward_tool_calls = chi2_pdf(max(sum(extra_info['tool_rewards']), 0))
+    reward_tool_calls = chi2_pdf(max(sum(extra_info['tool_rewards']), 0)) * np.mean(tool_rewards)
 
     return alpha * reward_tool_calls + max( - beta * nll_score + 1, -1)
