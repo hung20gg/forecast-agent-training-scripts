@@ -24,7 +24,7 @@ actor_rollout_ref:
   hybrid_engine: true
 
   model:
-    path: Qwen/Qwen3.5-2B
+    path: Qwen/Qwen3-1.7B
 
     enable_gradient_checkpointing: true
     enable_activation_offload: true
@@ -38,7 +38,7 @@ actor_rollout_ref:
     target_modules: all-linear
 
   actor:
-    strategy: fsdp2
+    strategy: fsdp
 
     ppo_mini_batch_size: 16
     ppo_micro_batch_size: null
