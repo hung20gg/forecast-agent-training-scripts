@@ -38,7 +38,7 @@ actor_rollout_ref:
     target_modules: all-linear
 
   actor:
-    strategy: fsdp
+    strategy: fsdp2
 
     ppo_mini_batch_size: 16
     ppo_micro_batch_size: null
