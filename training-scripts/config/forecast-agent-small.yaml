@@ -24,7 +24,7 @@ actor_rollout_ref:
   hybrid_engine: true
 
   model:
-    path: Qwen/Qwen3-1.7B
+    path: Qwen/Qwen3.5-2B
 
     enable_gradient_checkpointing: true
     enable_activation_offload: true
@@ -42,7 +42,7 @@ actor_rollout_ref:
 
     ppo_mini_batch_size: 32
     ppo_micro_batch_size: null
-    ppo_micro_batch_size_per_gpu: 4
+    ppo_micro_batch_size_per_gpu: 1
 
     use_dynamic_bsz: true
 
@@ -64,7 +64,7 @@ actor_rollout_ref:
     shuffle: true
 
     optim:
-      lr: 1e-5
+      lr: 2e-5
       lr_warmup_steps: -1
       lr_warmup_steps_ratio: 0.05
       min_lr_ratio: 0.0
@@ -87,7 +87,7 @@ actor_rollout_ref:
       wrap_policy:
         min_num_params: 0
 
-    log_prob_micro_batch_size_per_gpu: 4
+    log_prob_micro_batch_size_per_gpu: 1
 
   rollout:
     name: vllm
@@ -127,7 +127,7 @@ actor_rollout_ref:
         disable_mm_preprocessor_cache: true
       sglang: {}
 
-    log_prob_micro_batch_size_per_gpu: 4
+    log_prob_micro_batch_size_per_gpu: 1
 
     n: 4
     calculate_log_probs: true

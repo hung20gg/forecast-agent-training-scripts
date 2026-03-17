@@ -9,8 +9,8 @@ defaults:
 data:
   train_files: ~/data/financial-dataset/train.parquet
   val_files: ~/data/financial-dataset/test.parquet
-  max_prompt_length: 6400
-  max_response_length: 1600
+  max_prompt_length: 4000
+  max_response_length: 4000
   shuffle: true
   train_batch_size: 16
   return_raw_chat: true
