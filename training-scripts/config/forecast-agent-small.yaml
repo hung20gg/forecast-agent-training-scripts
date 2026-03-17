@@ -40,7 +40,7 @@ actor_rollout_ref:
   actor:
     strategy: fsdp
 
-    ppo_mini_batch_size: 32
+    ppo_mini_batch_size: 16
     ppo_micro_batch_size: null
     ppo_micro_batch_size_per_gpu: 1
 
