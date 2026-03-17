@@ -2,7 +2,7 @@
     "mcpServers": {
         "Financial Database": {
             "type": "sse",
-            "url": "https://mcp_window.quanghung20gg.site/sse",
+            "url": "https://mcp_window.quanghung20gg.com/sse",
             "auth_token": "None"
         }
     }
