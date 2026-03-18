@@ -1,0 +1,143 @@
+hydra:
+  searchpath:
+    - file://verl/verl/trainer/config
+
+defaults:
+  - ppo_trainer
+  - _self_
+
+data:
+  train_files: ~/data/financial-dataset/train.parquet
+  val_files: ~/data/financial-dataset/test.parquet
+
+  max_prompt_length: 4000
+  max_response_length: 16000
+
+  shuffle: true
+  train_batch_size: 64
+  return_raw_chat: true
+
+algorithm:
+  adv_estimator: grpo
+
+actor_rollout_ref:
+  hybrid_engine: true
+
+  model:
+    path: Qwen/Qwen3.5-2B
+
+    enable_gradient_checkpointing: true
+    enable_activation_offload: true
+
+    trust_remote_code: true
+    use_remove_padding: true
+
+    lora_rank: 32
+    lora_alpha: 64
+    target_modules: all-linear
+
+  actor:
+    strategy: megatron   # ✅ switch from fsdp → megatron
+
+    # Megatron parallelism
+    tensor_model_parallel_size: 1
+    pipeline_model_parallel_size: 1
+    sequence_parallel: false
+
+    ppo_mini_batch_size: 16
+    ppo_micro_batch_size_per_gpu: 1
+
+    use_dynamic_bsz: true
+    ppo_max_token_len_per_gpu: 40000
+
+    grad_clip: 1.0
+    clip_ratio: 0.2
+    entropy_coeff: 0.0
+
+    use_kl_loss: true
+    kl_loss_coef: 0.001
+    kl_loss_type: low_var_kl
+
+    ppo_epochs: 1
+    shuffle: true
+
+    # 🔥 Megatron optimizer (REQUIRED CHANGE)
+    optim:
+      optimizer: adam
+      lr: 2e-5
+
+      total_training_steps: -1
+
+      lr_warmup_steps: -1
+      lr_warmup_steps_ratio: 0.05
+
+      lr_decay_style: cosine   # replaces lr_scheduler_type
+      lr_decay_steps: null
+
+      min_lr: 0.0
+      weight_decay: 0.01
+
+      clip_grad: 1.0
+
+  ref:
+    strategy: megatron   # must match actor
+
+    tensor_model_parallel_size: 1
+    pipeline_model_parallel_size: 1
+
+    log_prob_micro_batch_size_per_gpu: 1
+
+  rollout:
+    name: vllm
+    mode: async
+
+    multi_turn:
+      enable: true
+      max_user_turns: 10
+      tool_config_path: ./training-scripts/config/tool_config/mcp_config.yaml
+
+    agent:
+      default_agent_loop: tool_agent
+
+    temperature: 0.3
+    top_k: -1
+    top_p: 1
+
+    dtype: bfloat16
+
+    gpu_memory_utilization: 0.5
+
+    ignore_eos: false
+    enforce_eager: true
+    free_cache_engine: true
+
+    tensor_model_parallel_size: 1
+
+    max_model_len: 40000
+    max_num_batched_tokens: 16000
+    max_num_seqs: 64
+
+    do_sample: true
+
+    engine_kwargs:
+      vllm:
+        disable_mm_preprocessor_cache: true
+      sglang: {}
+
+    log_prob_micro_batch_size_per_gpu: 1
+
+    n: 4
+    calculate_log_probs: true
+
+reward_model:
+  enable: false
+
+trainer:
+  project_name: finance-grpo
+  run_name: qwen3-1.7b
+  total_epochs: 3
+  logger: ["console", "wandb"]
+
+custom_reward_function:
+  path: ./training-scripts/config/reward_function.py
+  name: compute_score

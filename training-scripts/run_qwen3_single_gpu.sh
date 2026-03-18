@@ -5,7 +5,7 @@ export CUDA_DEVICE_MAX_CONNECTIONS=1 # For megatron communication/computation ov
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 CONFIG_PATH="$PROJECT_DIR/training-scripts/config"
-
+BACKEND=${BACKEND:-"fsdp"}
 DATASET_DIR="$HOME/data/finance"
 
 size=${SIZE:-"micro"} # small, medium, large
@@ -40,9 +40,13 @@ echo "Config Path: $CONFIG_PATH"
 echo "Training files: $train_files"
 echo "Testing files: $test_files"
 
+CONFIG_FILE="forecast-agent-$size.yaml"
+if [ "$backend" == "megatron" ]; then
+    CONFIG_FILE="forecast-agent-$size-megatron.yaml"
+fi
 
 python3 -m verl.trainer.main_ppo --config-path=$CONFIG_PATH \
-    --config-name="forecast-agent-$size.yaml" \
+    --config-name=$CONFIG_FILE \
     algorithm.adv_estimator=grpo \
     data.train_files="$train_files" \
     data.val_files="$test_files" \

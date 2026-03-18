@@ -4,6 +4,7 @@ set -e  # stop on error
 
 ENV_NAME="verl"
 PYTHON_VERSION="3.12"
+BACKEND=${BACKEND:-"fsdp"} # or "megatron"
 
 echo "========================================"
 echo "Initializing Conda"
@@ -60,13 +61,36 @@ echo "========================================"
 echo "Installing inference frameworks"
 echo "========================================"
 
-USE_MEGATRON=0 USE_SGLANG=0 bash scripts/install_vllm_sglang_mcore.sh
+if [ "$BACKEND" == "megatron" ]; then
+    echo "Installing Megatron dependencies..."
+    USE_MEGATRON=1 USE_SGLANG=0 bash scripts/install_vllm_sglang_mcore.sh
 
-echo "========================================"
-echo "Installing editable package"
-echo "========================================"
+    echo "========================================"
+    echo "Installing editable package"
+    echo "========================================"
 
-pip install transformers==4.57.6
+    pip install vllm==0.15.0
+
+    pip install transformers==5.3.0
+    
+    # Install Apex for Megatron
+    git clone https://github.com/NVIDIA/apex.git && \
+    cd apex && \
+    MAX_JOB=32 pip install -v --disable-pip-version-check --no-cache-dir --no-build-isolation --config-settings "--build-option=--cpp_ext" --config-settings "--build-option=--cuda_ext" ./
+    cd ..
+else
+    USE_MEGATRON=0 USE_SGLANG=0 bash scripts/install_vllm_sglang_mcore.sh
+
+    echo "========================================"
+    echo "Installing editable package"
+    echo "========================================"
+
+    pip install transformers==4.57.6
+fi
+
+
+
+
 
 pip install --no-deps -e .
 
