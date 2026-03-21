@@ -7,15 +7,21 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 CONFIG_PATH="$PROJECT_DIR/training-scripts/config"
 BACKEND=${BACKEND:-"fsdp"}
 DATASET_DIR="$HOME/data/finance"
+SAVE_FREQ=${SAVE_FREQ:-40}
+TEST_FREQ=${TEST_FREQ:-20}
 
 size=${SIZE:-"micro"} # small, medium, large
 
 if [ "$size" == "micro" ]; then
     echo "Downloading a small subset of the dataset for quick testing..."
     python "$PROJECT_DIR/training-scripts/download.py" --local_save_dir $DATASET_DIR --limit_rows 50
+    SAVE_FREQ=5
+    TEST_FREQ=5
     
 elif [ "$size" == "small" ]; then
     python "$PROJECT_DIR/training-scripts/download.py" --local_save_dir $DATASET_DIR --limit_rows 64
+    SAVE_FREQ=5
+    TEST_FREQ=5
 
 else
     python "$PROJECT_DIR/training-scripts/download.py" --local_save_dir $DATASET_DIR
@@ -41,7 +47,7 @@ echo "Training files: $train_files"
 echo "Testing files: $test_files"
 
 CONFIG_FILE="forecast-agent-$size.yaml"
-if [ "$backend" == "megatron" ]; then
+if [ "$BACKEND" == "megatron" ]; then
     CONFIG_FILE="forecast-agent-$size-megatron.yaml"
 fi
 
@@ -53,7 +59,7 @@ python3 -m verl.trainer.main_ppo --config-path=$CONFIG_PATH \
     actor_rollout_ref.rollout.multi_turn.tool_config_path="$PROJECT_DIR/training-scripts/config/tool_config/mcp_config.yaml" \
     actor_rollout_ref.rollout.agent.default_agent_loop=tool_agent \
     trainer.n_gpus_per_node=1 \
-    trainer.save_freq=40 \
-    trainer.test_freq=20 \
+    trainer.save_freq=$SAVE_FREQ \
+    trainer.test_freq=$TEST_FREQ \
     actor_rollout_ref.rollout.tensor_model_parallel_size=1 \
     custom_reward_function.path="$PROJECT_DIR/training-scripts/config/reward_function.py" $@

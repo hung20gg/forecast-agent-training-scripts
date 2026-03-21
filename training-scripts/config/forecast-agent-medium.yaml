@@ -10,8 +10,8 @@ data:
   tokenizer: null
   train_files: ~/data/financial-dataset/train.parquet
   val_files: ~/data/financial-dataset/test.parquet
-  max_prompt_length: 6000
-  max_response_length: 24000
+  max_prompt_length: 4000
+  max_response_length: 26000
   shuffle: True
   train_batch_size: 64
   return_raw_chat: True
@@ -22,7 +22,7 @@ algorithm:
 actor_rollout_ref:
   hybrid_engine: True
   model:
-    path: Qwen/Qwen3-4B-Thinking-2507
+    path: Qwen/Qwen3.5-4B
     # path: Qwen/Qwen3.5-4B
     enable_gradient_checkpointing: True
     enable_activation_offload: False
@@ -39,7 +39,7 @@ actor_rollout_ref:
     ppo_micro_batch_size: null # will be deprecated, use ppo_micro_batch_size_per_gpu
     ppo_micro_batch_size_per_gpu: 1
     use_dynamic_bsz: False
-    ppo_max_token_len_per_gpu: 16384 # n * ${data.max_prompt_length} + ${data.max_response_length}
+    ppo_max_token_len_per_gpu: 40000 # n * ${data.max_prompt_length} + ${data.max_response_length}
     grad_clip: 1.0
     clip_ratio: 0.2
     entropy_coeff: 0.0
@@ -54,16 +54,16 @@ actor_rollout_ref:
     shuffle: true
     
     optim:
-      lr: 3e-5
+      optimizer: AdamW
+      lr: 2e-5
 
+      total_training_steps: -1
 
-      lr_warmup_steps: -1 # Prioritized. Negative values mean delegating to lr_warmup_steps_ratio.
-      lr_warmup_steps_ratio: 0.05  # the total steps will be injected during runtime
-      min_lr_ratio: 0.0   # only used with cosine lr scheduler, default to 0.0
-      num_cycles: 0.5     # only used with cosine lr scheduler, default to 0.5
-      lr_scheduler_type: cosine  # select from constant/cosine
-      total_training_steps: -1  # must be override by program
-    
+      lr_warmup_steps: -1
+      lr_warmup_steps_ratio: 0.05
+
+      lr_scheduler_type: cosine   # replaces lr_scheduler_type
+
     fsdp_config:
       param_offload: False
       optimizer_offload: False
@@ -98,7 +98,7 @@ actor_rollout_ref:
     top_p: 1
     # for vllm rollout
     dtype: bfloat16 # should align with FSDP
-    gpu_memory_utilization: 0.3
+    gpu_memory_utilization: 0.4
     
     ignore_eos: False
     enforce_eager: True
@@ -107,11 +107,6 @@ actor_rollout_ref:
     max_model_len: 64000
     max_num_batched_tokens: 8192
     do_sample: True
-    engine_kwargs: # inference engine parameters, please refer vllm/sglang official doc for detail
-      vllm: 
-        disable_mm_preprocessor_cache: True
-      sglang: {}
-
     log_prob_micro_batch_size_per_gpu: 1
 
     n: 5 # for each prompt, sample n responses (i.e. num sample times). set it to values > 1 for grpo, rloo
@@ -122,7 +117,7 @@ reward_model:
 
 trainer:
   project_name: finance-grpo
-  run_name: qwen3-4b-thinking-2507
+  run_name: qwen3-4b
   total_epochs: 3
   logger: ["console","wandb"]
 

@@ -10,7 +10,7 @@ data:
   train_files: ~/data/financial-dataset/train.parquet
   val_files: ~/data/financial-dataset/test.parquet
   max_prompt_length: 4000
-  max_response_length: 4000
+  max_response_length: 2000
   shuffle: true
   train_batch_size: 16
   return_raw_chat: true
@@ -22,14 +22,14 @@ actor_rollout_ref:
   hybrid_engine: true
   model:
     # path: Qwen/Qwen3-4B-Thinking-2507
-    path: Qwen/Qwen3-0.6B
+    path: Qwen/Qwen3.5-0.8B
     enable_gradient_checkpointing: true
     enable_activation_offload: false
     trust_remote_code: true
-    use_remove_padding: true
+    use_remove_padding: false
     
   actor:
-    strategy: fsdp2  # This is for backward-compatibility
+    strategy: fsdp  # This is for backward-compatibility
     ppo_mini_batch_size: 4
     ppo_micro_batch_size_per_gpu: 1
     use_dynamic_bsz: true
@@ -48,6 +48,7 @@ actor_rollout_ref:
     shuffle: true
     
     optim:
+      optimizer: AdamW
       lr: 1e-6
             
       lr_warmup_steps: -1 # Prioritized. Negative values mean delegating to lr_warmup_steps_ratio.
@@ -95,18 +96,14 @@ actor_rollout_ref:
     # for vllm rollout
     dtype: bfloat16 # should align with FSDP
     gpu_memory_utilization: 0.5
-    max_model_len: 8192
+    max_model_len: 4096
     ignore_eos: false
     enforce_eager: true
     free_cache_engine: true
     tensor_model_parallel_size: 1
     max_num_batched_tokens: 4000
-    max_num_seqs: 16
+    max_num_seqs: 4
     do_sample: true
-    engine_kwargs: # inference engine parameters, please refer vllm/sglang official doc for detail
-      vllm: 
-        disable_mm_preprocessor_cache: true
-      sglang: {}
 
     log_prob_micro_batch_size_per_gpu: 1 # should be aligned with ref's log_prob_micro_batch_size_per_gpu for better performance
 

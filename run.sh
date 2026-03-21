@@ -7,6 +7,7 @@ wandb login
 # Defaults
 SIZE="small"
 MULTI_GPU=0
+BACKEND="fsdp"
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -15,29 +16,29 @@ while [[ $# -gt 0 ]]; do
             SIZE="$2"
             shift 2
             ;;
+        --backend)
+            BACKEND="$2"
+            shift 2
+            ;;
         --multi-gpu)
             MULTI_GPU=1
             shift
             ;;
         *)
             echo "Unknown argument: $1"
-            echo "Usage: $0 [--size micro|small|medium|large] [--multi-gpu]"
+            echo "Usage: $0 [--size micro|small|medium|large] [--multi-gpu] [--backend fsdp|megatron]"
             exit 1
             ;;
     esac
 done
 
 # Validate size
-if [[ "$SIZE" != "small" && "$SIZE" != "medium" && "$SIZE" != "large" && "$SIZE" != "micro" ]]; then
-    echo "Error: --size must be one of: small, medium, large, micro"
-    echo "Usage: $0 [--size small|medium|large|micro] [--multi-gpu]"
-    exit 1
-fi
-
 echo "Size: $SIZE"
 echo "Multi-GPU: $MULTI_GPU"
+echo "Backend: $BACKEND"
 
 export SIZE="$SIZE"
+export BACKEND="$BACKEND"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 

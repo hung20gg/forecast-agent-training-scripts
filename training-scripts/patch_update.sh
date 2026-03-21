@@ -1,25 +1,56 @@
 #!/bin/bash
-# Overwrites verl/verl/tools/schemas.py with the custom version.
+# Overwrites verl files with custom versions.
+
+set -e  # stop on error
+
+USE_MEGATRON=${USE_MEGATRON:-0}
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --megatron)
+            USE_MEGATRON=1
+            shift
+            ;;
+        *)
+            echo "Unknown argument: $1"
+            echo "Usage: $0 [--megatron]"
+            exit 1
+            ;;
+    esac
+done
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TARGET="$SCRIPT_DIR/../verl/verl/tools/schemas.py"
-SOURCE="$SCRIPT_DIR/patch/schemas.py"
 
-cp "$SOURCE" "$TARGET"
-echo "Patched: $TARGET"
+patch_file () {
+    local source="$1"
+    local target="$2"
 
+    if [[ ! -f "$source" ]]; then
+        echo "❌ Missing source: $source"
+        exit 1
+    fi
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TARGET="$SCRIPT_DIR/../verl/verl/experimental/agent_loop/tool_agent_loop.py"
-SOURCE="$SCRIPT_DIR/patch/tool_agent_loop.py"
+    if [[ ! -d "$(dirname "$target")" ]]; then
+        echo "❌ Target directory missing: $(dirname "$target")"
+        exit 1
+    fi
 
-cp "$SOURCE" "$TARGET"
-echo "Patched: $TARGET"
+    cp "$source" "$target"
+    echo "✅ Patched: $target"
+}
 
+patch_file "$SCRIPT_DIR/patch/schemas.py" \
+           "$SCRIPT_DIR/../verl/verl/tools/schemas.py"
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TARGET="$SCRIPT_DIR/../verl/verl/tools/mcp_tool_with_extra_info.py"
-SOURCE="$SCRIPT_DIR/patch/mcp_tool_with_extra_info.py"
+patch_file "$SCRIPT_DIR/patch/tool_agent_loop.py" \
+           "$SCRIPT_DIR/../verl/verl/experimental/agent_loop/tool_agent_loop.py"
 
-cp "$SOURCE" "$TARGET"
-echo "Patched: $TARGET"
+patch_file "$SCRIPT_DIR/patch/mcp_tool_with_extra_info.py" \
+           "$SCRIPT_DIR/../verl/verl/tools/mcp_tool_with_extra_info.py"
+
+patch_file "$SCRIPT_DIR/patch/mcp_tool_with_extra_info.py" \
+           "$SCRIPT_DIR/../verl/verl/tools/mcp_tool_with_extra_info.py"
+
+patch_file "$SCRIPT_DIR/patch/fsdp_utils.py" \
+            "$SCRIPT_DIR/../verl/verl/utils/fsdp_utils.py"
+fi

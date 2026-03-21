@@ -6,6 +6,23 @@ ENV_NAME="verl"
 PYTHON_VERSION="3.12"
 BACKEND=${BACKEND:-"fsdp"} # or "megatron"
 
+# Parse arguments
+while [[ "$#" -gt 0 ]]; do
+    case "$1" in
+        --megatron)
+            BACKEND="megatron"
+            shift
+            ;;
+        *)
+            echo "Unknown parameter: $1"
+            echo "Usage: $0 [--megatron]"
+            exit 1
+            ;;
+    esac
+done
+
+echo "Using backend: $BACKEND"
+
 echo "========================================"
 echo "Initializing Conda"
 echo "========================================"
@@ -22,8 +39,9 @@ echo "========================================"
 echo "Creating environment (if not exists)"
 echo "========================================"
 
-conda create -y -n $ENV_NAME python=$PYTHON_VERSION 2>/dev/null || true
-
+if ! conda env list | grep -q "^$ENV_NAME "; then
+    conda create -y -n "$ENV_NAME" python="$PYTHON_VERSION" 2>/dev/null
+fi
 
 echo "========================================"
 echo "Activating environment"
@@ -62,6 +80,9 @@ echo "Installing inference frameworks"
 echo "========================================"
 
 if [ "$BACKEND" == "megatron" ]; then
+
+    bash training-scripts/patch_update.sh
+
     echo "Installing Megatron dependencies..."
     USE_MEGATRON=1 USE_SGLANG=0 bash scripts/install_vllm_sglang_mcore.sh
 
@@ -69,9 +90,9 @@ if [ "$BACKEND" == "megatron" ]; then
     echo "Installing editable package"
     echo "========================================"
 
-    pip install vllm==0.15.0
+    pip install vllm==0.17.1
 
-    pip install transformers==5.3.0
+    # pip install transformers==5.3.0
     
     # Install Apex for Megatron
     git clone https://github.com/NVIDIA/apex.git && \
@@ -85,7 +106,7 @@ else
     echo "Installing editable package"
     echo "========================================"
 
-    pip install transformers==4.57.6
+    # pip install transformers==4.57.6
 fi
 
 
