@@ -26,7 +26,6 @@ pip install "nvidia-ml-py>=12.560.30" "fastapi[standard]>=0.115.0" "optree>=0.13
 
 echo "3. install FlashAttention and FlashInfer"
 # Install flash-attn-2.8.1 (cxx11abi=False)
-pip install flash-attn --no-build-isolation
 
 # pip install --no-cache-dir flashinfer-python==0.3.1
 
@@ -46,6 +45,8 @@ fi
 #     python -c "from opencv_fixer import AutoFix; AutoFix()"
 
 pip install transformers==5.3.0
+
+pip install flash-attn --no-build-isolation
 
 if [ $USE_MEGATRON -eq 1 ]; then
     echo "6. Install cudnn python package (avoid being overridden)"

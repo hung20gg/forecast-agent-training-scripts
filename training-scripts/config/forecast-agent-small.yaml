@@ -24,7 +24,7 @@ actor_rollout_ref:
   hybrid_engine: true
 
   model:
-    path: Qwen/Qwen3.5-2B
+    path: hung20gg/Qwen3.5-2B-text-only
 
     enable_gradient_checkpointing: true
     enable_activation_offload: true
@@ -94,6 +94,7 @@ actor_rollout_ref:
     multi_turn:
       enable: true
       max_user_turns: 10
+      format: qwen3_coder
       tool_config_path: ./training-scripts/config/tool_config/mcp_config.yaml
 
     agent:
@@ -119,6 +120,9 @@ actor_rollout_ref:
     max_num_seqs: 64
 
     do_sample: true
+    engine_kwargs: # inference engine parameters, please refer vllm/sglang official doc for detail
+      vllm:
+        tool_call_parser: qwen3_xml
 
     log_prob_micro_batch_size_per_gpu: 1
 
