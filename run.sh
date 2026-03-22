@@ -8,6 +8,7 @@ wandb login
 SIZE="small"
 MULTI_GPU=0
 BACKEND="fsdp"
+DEMO=0
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -26,8 +27,12 @@ while [[ $# -gt 0 ]]; do
             ;;
         *)
             echo "Unknown argument: $1"
-            echo "Usage: $0 [--size micro|small|medium|large] [--multi-gpu] [--backend fsdp|megatron]"
+            echo "Usage: $0 [--size micro|small|medium|large] [--multi-gpu] [--backend fsdp|megatron] [--demo]"
             exit 1
+            ;;
+        --demo)
+            DEMO=1
+            shift
             ;;
     esac
 done

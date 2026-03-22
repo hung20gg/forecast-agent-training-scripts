@@ -21,10 +21,10 @@ test_files="['$financial_test_path']"
 size=${SIZE:-"small"} # small, medium, large
 
 function now() {
-    date '+%d-%H-%M'
+    date '+%H-%d-%m-%y'
 }
 
-EXPERIMENT_NAME="qwen3_forecast_multi_$(now)"
+EXPERIMENT_NAME="multi-qwen3.5-$size-$(now)"
 
 echo "Experiment Name: $EXPERIMENT_NAME"
 echo "Config Path: $CONFIG_PATH"

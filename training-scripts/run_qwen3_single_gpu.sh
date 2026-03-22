@@ -11,15 +11,13 @@ SAVE_FREQ=${SAVE_FREQ:-40}
 TEST_FREQ=${TEST_FREQ:-20}
 
 size=${SIZE:-"micro"} # small, medium, large
+DEMO=${DEMO:-0}
 
-if [ "$size" == "micro" ]; then
+
+
+if [ "$DEMO" == "1" ]; then
     echo "Downloading a small subset of the dataset for quick testing..."
     python "$PROJECT_DIR/training-scripts/download.py" --local_save_dir $DATASET_DIR --limit_rows 50
-    SAVE_FREQ=5
-    TEST_FREQ=5
-    
-elif [ "$size" == "small" ]; then
-    python "$PROJECT_DIR/training-scripts/download.py" --local_save_dir $DATASET_DIR --limit_rows 64
     SAVE_FREQ=5
     TEST_FREQ=5
 
@@ -36,10 +34,10 @@ test_files="['$financial_test_path']"
 
 
 function now() {
-    date '+%d-%H-%M'
+    date '+%H-%d-%m-%y'
 }
 
-EXPERIMENT_NAME="qwen3_forecast_$(now)"
+EXPERIMENT_NAME="qwen3.5-$size-$(now)"
 
 echo "Experiment Name: $EXPERIMENT_NAME"
 echo "Config Path: $CONFIG_PATH"

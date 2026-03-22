@@ -59,7 +59,7 @@ actor_rollout_ref:
       total_training_steps: -1  # must be override by program
     
     fsdp_config:
-      param_offload: false
+      param_offload: true
       optimizer_offload: false
       fsdp_size: -1
     checkpoint:
@@ -70,7 +70,7 @@ actor_rollout_ref:
       load_contents: ${actor_rollout_ref.actor.checkpoint.save_contents}
   ref:
     fsdp_config:
-      param_offload: false
+      param_offload: true
       wrap_policy:
         # transformer_layer_cls_to_wrap: None
         min_num_params: 0

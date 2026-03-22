@@ -11,7 +11,7 @@ data:
   val_files: ~/data/financial-dataset/test.parquet
 
   max_prompt_length: 4000
-  max_response_length: 26000
+  max_response_length: 36000
 
   shuffle: true
   train_batch_size: 256
@@ -65,7 +65,7 @@ actor_rollout_ref:
 
       total_training_steps: -1
 
-      lr_warmup_steps: -1
+      lr_warmup_steps: 100
       lr_warmup_steps_ratio: 0.05
 
       lr_scheduler_type: cosine   # replaces lr_scheduler_type
@@ -76,7 +76,7 @@ actor_rollout_ref:
       fsdp_size: -1
 
     checkpoint:
-      save_contents: ["model", "extra"]
+      save_contents: ["model", "optimizer", "extra"]
       load_contents: ${actor_rollout_ref.actor.checkpoint.save_contents}
 
   ref:
@@ -100,7 +100,7 @@ actor_rollout_ref:
     agent:
       default_agent_loop: tool_agent
 
-    temperature: 0.7
+    temperature: 0.6
     top_k: -1
     top_p: 1
 
@@ -134,7 +134,7 @@ reward_model:
 
 trainer:
   project_name: finance-grpo
-  run_name: qwen3-1.7b
+  run_name: qwen3.5-2b
   total_epochs: 3
   logger: ["console", "wandb"]
 

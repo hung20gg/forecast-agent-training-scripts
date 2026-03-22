@@ -36,7 +36,7 @@ def extract_numerical_answer(response: str) -> tuple[float, float]:
         return None, None
 
 
-def chi2_pdf(x, df=13):
+def chi2_pdf(x, df=11):
     if x < 0:
         return 0.0
     
