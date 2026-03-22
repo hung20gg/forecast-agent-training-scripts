@@ -14,7 +14,7 @@ data:
   max_response_length: 26000
 
   shuffle: true
-  train_batch_size: 64
+  train_batch_size: 32
   return_raw_chat: true
 
 algorithm:
@@ -35,7 +35,7 @@ actor_rollout_ref:
   actor:
     strategy: fsdp
 
-    ppo_mini_batch_size: 16
+    ppo_mini_batch_size: 8
     ppo_micro_batch_size: null
     ppo_micro_batch_size_per_gpu: 1
 
@@ -71,7 +71,7 @@ actor_rollout_ref:
       lr_scheduler_type: cosine   # replaces lr_scheduler_type
 
     fsdp_config:
-      param_offload: false
+      param_offload: true
       optimizer_offload: true
       fsdp_size: -1
 
@@ -81,7 +81,7 @@ actor_rollout_ref:
 
   ref:
     fsdp_config:
-      param_offload: false
+      param_offload: true
       wrap_policy:
         min_num_params: 0
 

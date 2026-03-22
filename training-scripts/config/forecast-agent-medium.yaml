@@ -25,7 +25,7 @@ actor_rollout_ref:
     path: Qwen/Qwen3.5-4B
     # path: Qwen/Qwen3.5-4B
     enable_gradient_checkpointing: True
-    enable_activation_offload: False
+    enable_activation_offload: True
     trust_remote_code: True
     use_remove_padding: False
   
@@ -61,8 +61,8 @@ actor_rollout_ref:
       lr_scheduler_type: cosine   # replaces lr_scheduler_type
 
     fsdp_config:
-      param_offload: False
-      optimizer_offload: False
+      param_offload: True
+      optimizer_offload: True
       fsdp_size: -1
     checkpoint:
       # What to include in saved checkpoints
