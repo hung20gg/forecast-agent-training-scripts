@@ -90,7 +90,7 @@ actor_rollout_ref:
     agent:
       default_agent_loop: tool_agent
 
-    temperature: 0.5
+    temperature: 0.6
     top_k: -1 # 0 for hf rollout, -1 for vllm rollout
     top_p: 1
     # for vllm rollout
@@ -101,8 +101,8 @@ actor_rollout_ref:
     enforce_eager: true
     free_cache_engine: true
     tensor_model_parallel_size: 1
-    max_num_batched_tokens: 2000
-    max_num_seqs: 4
+    max_num_batched_tokens: 3072
+    max_num_seqs: 8
     do_sample: true
     engine_kwargs: # inference engine parameters, please refer vllm/sglang official doc for detail
       vllm:

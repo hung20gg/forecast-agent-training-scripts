@@ -55,7 +55,7 @@ actor_rollout_ref:
 
       total_training_steps: -1
 
-      lr_warmup_steps: -1
+      lr_warmup_steps: 100
       lr_warmup_steps_ratio: 0.05
 
       lr_scheduler_type: cosine   # replaces lr_scheduler_type

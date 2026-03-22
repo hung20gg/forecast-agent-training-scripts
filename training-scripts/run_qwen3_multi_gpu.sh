@@ -24,7 +24,7 @@ function now() {
     date '+%d-%H-%M'
 }
 
-EXPERIMENT_NAME="qwen3_forecast_$(now)"
+EXPERIMENT_NAME="qwen3_forecast_multi_$(now)"
 
 echo "Experiment Name: $EXPERIMENT_NAME"
 echo "Config Path: $CONFIG_PATH"
@@ -42,4 +42,5 @@ python3 -m verl.trainer.main_ppo --config-path=$CONFIG_PATH \
     actor_rollout_ref.rollout.agent.default_agent_loop=tool_agent \
     trainer.n_gpus_per_node=${NUM_GPUS_PER_NODE} \
     trainer.val_before_train=false \
+    trainer.experiment_name=$EXPERIMENT_NAME \
     custom_reward_function.path="$PROJECT_DIR/training-scripts/config/reward_function.py" $@
