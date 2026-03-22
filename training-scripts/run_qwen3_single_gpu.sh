@@ -61,5 +61,6 @@ python3 -m verl.trainer.main_ppo --config-path=$CONFIG_PATH \
     trainer.n_gpus_per_node=1 \
     trainer.save_freq=$SAVE_FREQ \
     trainer.test_freq=$TEST_FREQ \
+    trainer.val_before_train=false \
     actor_rollout_ref.rollout.tensor_model_parallel_size=1 \
     custom_reward_function.path="$PROJECT_DIR/training-scripts/config/reward_function.py" $@
