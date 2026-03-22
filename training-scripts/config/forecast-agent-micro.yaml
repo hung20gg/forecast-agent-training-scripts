@@ -60,7 +60,7 @@ actor_rollout_ref:
     
     fsdp_config:
       param_offload: true
-      optimizer_offload: true
+      optimizer_offload: false
       fsdp_size: -1
     checkpoint:
       # What to include in saved checkpoints
@@ -101,7 +101,7 @@ actor_rollout_ref:
     enforce_eager: true
     free_cache_engine: true
     tensor_model_parallel_size: 1
-    max_num_batched_tokens: 4000
+    max_num_batched_tokens: 2000
     max_num_seqs: 4
     do_sample: true
     engine_kwargs: # inference engine parameters, please refer vllm/sglang official doc for detail
