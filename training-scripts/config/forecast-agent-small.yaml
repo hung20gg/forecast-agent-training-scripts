@@ -14,7 +14,7 @@ data:
   max_response_length: 26000
 
   shuffle: true
-  train_batch_size: 32
+  train_batch_size: 256
   return_raw_chat: true
 
 algorithm:
@@ -35,7 +35,7 @@ actor_rollout_ref:
   actor:
     strategy: fsdp
 
-    ppo_mini_batch_size: 8
+    ppo_mini_batch_size: 16
     ppo_micro_batch_size: null
     ppo_micro_batch_size_per_gpu: 1
 
@@ -61,7 +61,7 @@ actor_rollout_ref:
     # 🔥 Megatron optimizer (REQUIRED CHANGE)
     optim:
       optimizer: AdamW
-      lr: 1e-5
+      lr: 1e-6
 
       total_training_steps: -1
 

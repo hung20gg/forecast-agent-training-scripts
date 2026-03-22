@@ -13,7 +13,7 @@ data:
   max_prompt_length: 4000
   max_response_length: 56000
   shuffle: True
-  train_batch_size: 64
+  train_batch_size: 256
   return_raw_chat: True
 
 algorithm:
@@ -51,7 +51,7 @@ actor_rollout_ref:
     
     optim:
       optimizer: AdamW
-      lr: 2e-5
+      lr: 1e-6
 
       total_training_steps: -1
 
