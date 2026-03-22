@@ -30,8 +30,8 @@ actor_rollout_ref:
     
   actor:
     strategy: fsdp  # This is for backward-compatibility
-    ppo_mini_batch_size: 4
-    ppo_micro_batch_size_per_gpu: 1
+    ppo_mini_batch_size: 8
+    ppo_micro_batch_size_per_gpu: 2
     use_dynamic_bsz: false
     ppo_max_token_len_per_gpu: 8192 # n * ${data.max_prompt_length} + ${data.max_response_length}
     grad_clip: 1.0
