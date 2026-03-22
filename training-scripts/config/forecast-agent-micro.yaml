@@ -119,7 +119,7 @@ reward_model:
 trainer:
   project_name: finance-grpo
   run_name: qwen3-0.6b
-  total_epochs: 2
+  total_epochs: 1
   logger: ["console","wandb"]
 
 custom_reward_function:
