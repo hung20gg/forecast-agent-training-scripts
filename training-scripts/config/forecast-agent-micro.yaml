@@ -59,7 +59,7 @@ actor_rollout_ref:
       total_training_steps: -1  # must be override by program
     
     fsdp_config:
-      param_offload: true
+      param_offload: false
       optimizer_offload: false
       fsdp_size: -1
     checkpoint:
@@ -70,7 +70,7 @@ actor_rollout_ref:
       load_contents: ${actor_rollout_ref.actor.checkpoint.save_contents}
   ref:
     fsdp_config:
-      param_offload: true
+      param_offload: false
       wrap_policy:
         # transformer_layer_cls_to_wrap: None
         min_num_params: 0
@@ -95,14 +95,14 @@ actor_rollout_ref:
     top_p: 1
     # for vllm rollout
     dtype: bfloat16 # should align with FSDP
-    gpu_memory_utilization: 0.5
+    gpu_memory_utilization: 0.6
     max_model_len: 8192
     ignore_eos: false
     enforce_eager: true
     free_cache_engine: true
     tensor_model_parallel_size: 1
     max_num_batched_tokens: 3072
-    max_num_seqs: 8
+    max_num_seqs: 16
     do_sample: true
     engine_kwargs: # inference engine parameters, please refer vllm/sglang official doc for detail
       vllm:

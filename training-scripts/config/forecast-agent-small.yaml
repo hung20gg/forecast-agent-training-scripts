@@ -106,7 +106,7 @@ actor_rollout_ref:
 
     dtype: bfloat16
 
-    gpu_memory_utilization: 0.5
+    gpu_memory_utilization: 0.6
 
     ignore_eos: false
     enforce_eager: true
