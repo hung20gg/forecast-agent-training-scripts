@@ -45,11 +45,11 @@ patch_file "$SCRIPT_DIR/patch/schemas.py" \
 patch_file "$SCRIPT_DIR/patch/tool_agent_loop.py" \
            "$SCRIPT_DIR/../verl/verl/experimental/agent_loop/tool_agent_loop.py"
 
-patch_file "$SCRIPT_DIR/patch/mcp_tool_with_extra_info.py" \
-           "$SCRIPT_DIR/../verl/verl/tools/mcp_tool_with_extra_info.py"
+# patch_file "$SCRIPT_DIR/patch/mcp_tool_with_extra_info.py" \
+#            "$SCRIPT_DIR/../verl/verl/tools/mcp_tool_with_extra_info.py"
 
 patch_file "$SCRIPT_DIR/patch/install_vllm_sglang_mcore.sh" \
            "$SCRIPT_DIR/../verl/scripts/install_vllm_sglang_mcore.sh"
 
-patch_file "$SCRIPT_DIR/patch/fsdp_utils.py" \
-            "$SCRIPT_DIR/../verl/verl/utils/fsdp_utils.py"
+# patch_file "$SCRIPT_DIR/patch/fsdp_utils.py" \
+#             "$SCRIPT_DIR/../verl/verl/utils/fsdp_utils.py"

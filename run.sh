@@ -25,15 +25,16 @@ while [[ $# -gt 0 ]]; do
             MULTI_GPU=1
             shift
             ;;
+        --demo)
+            DEMO=1
+            shift
+            ;;
         *)
             echo "Unknown argument: $1"
             echo "Usage: $0 [--size micro|small|medium|large] [--multi-gpu] [--backend fsdp|megatron] [--demo]"
             exit 1
             ;;
-        --demo)
-            DEMO=1
-            shift
-            ;;
+        
     esac
 done
 
@@ -44,6 +45,7 @@ echo "Backend: $BACKEND"
 
 export SIZE="$SIZE"
 export BACKEND="$BACKEND"
+export DEMO="$DEMO"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
