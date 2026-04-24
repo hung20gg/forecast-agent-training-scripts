@@ -243,6 +243,12 @@ def compute_score(data_source, solution_str, ground_truth, extra_info, alpha = 2
 
     score = float(label)
 
+    if len(tool_calls) > 10:
+        score -= 0.25
+
+    if len(tool_calls) > 15:
+        score -= 0.25
+
 
     print(f"### Extracted answer: {pred['value']}, ground truth: {ground_truth}, score: {score}")
     

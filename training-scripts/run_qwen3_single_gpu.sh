@@ -9,6 +9,7 @@ BACKEND=${BACKEND:-"fsdp"}
 DATASET_DIR="$HOME/data/finance"
 SAVE_FREQ=${SAVE_FREQ:-40}
 TEST_FREQ=${TEST_FREQ:-20}
+LORA_PATH=$PROJECT_DIR/models/qwen3-4b-v2/lora/sft
 
 size=${SIZE:-"micro"} # small, medium, large
 DEMO=${DEMO:-0}
@@ -56,6 +57,7 @@ python3 -m verl.trainer.main_ppo --config-path=$CONFIG_PATH \
     data.val_files="$test_files" \
     actor_rollout_ref.rollout.multi_turn.tool_config_path="$PROJECT_DIR/training-scripts/config/tool_config/mcp_config.yaml" \
     actor_rollout_ref.rollout.agent.default_agent_loop=tool_agent \
+    actor_rollout_ref.model.lora_adapter_path=$LORA_PATH \
     trainer.n_gpus_per_node=1 \
     trainer.save_freq=$SAVE_FREQ \
     trainer.test_freq=$TEST_FREQ \

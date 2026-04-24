@@ -2,7 +2,7 @@
     "mcpServers": {
         "Financial Database": {
             "type": "sse",
-            "url": "http://localhost:9003/sse",
+            "url": "http://localhost:9004/sse",
             "auth_token": "None"
         }
     }

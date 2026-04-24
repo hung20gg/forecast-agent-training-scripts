@@ -1,6 +1,16 @@
 #!/bin/bash
 set -e
 
+conda deactivate || true
+
+if [ -f "$HOME/anaconda3/etc/profile.d/conda.sh" ]; then
+    source "$HOME/anaconda3/etc/profile.d/conda.sh"
+    if [[ "$CONDA_DEFAULT_ENV" != "verl" ]]; then
+        conda activate verl 2>/dev/null || echo "Note: 'verl' environment not found or could not be activated. Continuing with current environment..."
+    fi
+fi
+
+
 # Login to Weights & Biases (wandb) for experiment tracking
 wandb login
 

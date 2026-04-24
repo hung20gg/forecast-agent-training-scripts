@@ -62,15 +62,28 @@ if __name__ == "__main__":
     # add a row to each data item that represents a unique id
     def make_map_fn(split):
         def process_fn(example, idx):
-            prompt = example["prompt"]
-            current_time = example['extra_info']['time_asked']
+            prompt = example["question"]
+            answer_type = example['answer_type']
+
+            prompt += f"\n\nExpected answer type: {answer_type}"
+
+            current_time = example.get('time_asked', '2024-01-01')
             system_prompt = react_system_prompt.replace("{current_time}", current_time)
             
-            if prompt[0]['role'] != 'system':
-                prompt.insert(0, {"role": "system", "content": system_prompt})
+            messages = [
+                {
+                    "role": "system",
+                    "content": system_prompt
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ]
+            
             data = example
-            data["prompt"] = prompt
-            data["ability"] = "finance"
+            data["prompt"] = messages
+            data["ability"] = "sql"
             data["agent_name"] = "tool_agent"
             return data
 
@@ -84,6 +97,9 @@ if __name__ == "__main__":
         print("Warning: Argument 'local_dir' is deprecated. Please use 'local_save_dir' instead.")
     else:
         local_save_dir = args.local_save_dir
+
+    local_save_dir = os.path.expanduser(local_save_dir)
+    os.makedirs(local_save_dir, exist_ok=True)
 
     train_dataset.to_parquet(os.path.join(local_save_dir, "train.parquet"))
     test_dataset.to_parquet(os.path.join(local_save_dir, "test.parquet"))

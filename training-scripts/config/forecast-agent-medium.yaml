@@ -28,6 +28,9 @@ actor_rollout_ref:
     enable_activation_offload: True
     trust_remote_code: True
     use_remove_padding: False
+    lora_rank: 64
+    lora_alpha: 128
+    target_modules: all-linear
   
   actor:
     strategy: fsdp  # This is for backward-compatibility
