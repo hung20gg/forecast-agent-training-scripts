@@ -4,8 +4,14 @@ import json
 from collections import Counter
 from typing import Dict, Any, Optional
 
-# Extract <answer> ... </answer> from the response
-
+def parse_ground_truth(gt):
+    try:
+        return json.loads(gt)   # dict/list case
+    except (json.JSONDecodeError, TypeError):
+        try:
+            return float(gt)    # numeric case
+        except (ValueError, TypeError):
+            raise ValueError(f"Invalid ground truth format: {gt}")
 
 # Extract <tool_call> ... </tool_call> from the response
 def extract_tool_call(response: str) -> list[str]:     
@@ -195,6 +201,8 @@ def compute_score(data_source, solution_str, ground_truth, extra_info, alpha = 2
     #     "std": 355.12,
     #     "id": "c16c4a04-5501-491c-a127-3a9a2fe951cb"
     # }
+
+    ground_truth = parse_ground_truth(ground_truth)
 
     tool_calls = extract_tool_call(solution_str)
 

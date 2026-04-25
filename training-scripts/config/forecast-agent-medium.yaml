@@ -13,7 +13,7 @@ data:
   max_prompt_length: 5000
   max_response_length: 20000
   shuffle: True
-  train_batch_size: 256
+  train_batch_size: 128
   return_raw_chat: True
 
 algorithm:
@@ -34,7 +34,7 @@ actor_rollout_ref:
   
   actor:
     strategy: fsdp  # This is for backward-compatibility
-    ppo_mini_batch_size: 32
+    ppo_mini_batch_size: 16
     ppo_micro_batch_size: null # will be deprecated, use ppo_micro_batch_size_per_gpu
     ppo_micro_batch_size_per_gpu: 1
     use_dynamic_bsz: False
@@ -54,11 +54,10 @@ actor_rollout_ref:
     
     optim:
       optimizer: AdamW
-      lr: 1e-6
+      lr: 5e-5
 
       total_training_steps: -1
 
-      lr_warmup_steps: 100
       lr_warmup_steps_ratio: 0.05
 
       lr_scheduler_type: cosine   # replaces lr_scheduler_type

@@ -1,5 +1,5 @@
 tools:
-  - class_name: verl.tools.mcp_tool.MCPBaseTool
+  - class_name: verl.tools.mcp_base_tool.MCPBaseTool
     config:
       type: mcp
       rate_limit: 120

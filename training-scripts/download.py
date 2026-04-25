@@ -16,6 +16,7 @@ Preprocess the GSM8k dataset to parquet format
 """
 
 import argparse
+import json
 import os
 import re
 
@@ -28,6 +29,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 
 with open(os.path.join(current_dir, "config", "react_system_prompt.md"), "r") as f:
     react_system_prompt = f.read()
+
 
 
 if __name__ == "__main__":
@@ -85,6 +87,8 @@ if __name__ == "__main__":
             data["prompt"] = messages
             data["ability"] = "sql"
             data["agent_name"] = "tool_agent"
+            data["data_source"] = "finance-sql"
+            data['reward_model'] = {"style": "rule", "ground_truth": str(example['reward_model']['ground_truth'])}
             return data
 
         return process_fn

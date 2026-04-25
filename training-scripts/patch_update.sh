@@ -42,8 +42,8 @@ patch_file () {
 patch_file "$SCRIPT_DIR/patch/schemas.py" \
            "$SCRIPT_DIR/../verl/verl/tools/schemas.py"
 
-patch_file "$SCRIPT_DIR/patch/tool_agent_loop.py" \
-           "$SCRIPT_DIR/../verl/verl/experimental/agent_loop/tool_agent_loop.py"
+# patch_file "$SCRIPT_DIR/patch/tool_agent_loop.py" \
+#            "$SCRIPT_DIR/../verl/verl/experimental/agent_loop/tool_agent_loop.py"
 
 # patch_file "$SCRIPT_DIR/patch/mcp_tool_with_extra_info.py" \
 #            "$SCRIPT_DIR/../verl/verl/tools/mcp_tool_with_extra_info.py"
