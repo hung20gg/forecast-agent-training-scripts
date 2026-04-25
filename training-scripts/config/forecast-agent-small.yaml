@@ -22,7 +22,7 @@ algorithm:
 actor_rollout_ref:
   hybrid_engine: True
   model:
-    path: Qwen/Qwen3-1.7B
+    path: hung20gg/qwen3-1.7b-sql
     # path: Qwen/Qwen3.5-4B
     enable_gradient_checkpointing: True
     enable_activation_offload: True
@@ -86,6 +86,7 @@ actor_rollout_ref:
     multi_turn:
       enable: True
       max_user_turns: 15
+      # format: qwen3_coder
       tool_config_path: ./training-scripts/config/tool_config/mcp_config.yaml # path to the tool config file, only needed when max_user_turns > 0
     
     agent:
