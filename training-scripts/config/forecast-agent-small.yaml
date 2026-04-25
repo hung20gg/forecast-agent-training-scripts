@@ -13,7 +13,7 @@ data:
   max_prompt_length: 3000
   max_response_length: 17000
   shuffle: True
-  train_batch_size: 64
+  train_batch_size: 16
   return_raw_chat: True
 
 algorithm:
@@ -22,7 +22,7 @@ algorithm:
 actor_rollout_ref:
   hybrid_engine: True
   model:
-    path: Qwen/Qwen3-4B-Thinking-2507
+    path: Qwen/Qwen3-1.7B
     # path: Qwen/Qwen3.5-4B
     enable_gradient_checkpointing: True
     enable_activation_offload: True
@@ -38,7 +38,7 @@ actor_rollout_ref:
     ppo_micro_batch_size: null # will be deprecated, use ppo_micro_batch_size_per_gpu
     ppo_micro_batch_size_per_gpu: 1
     use_dynamic_bsz: False
-    ppo_max_token_len_per_gpu: 80000 # n * ${data.max_prompt_length} + ${data.max_response_length}
+    ppo_max_token_len_per_gpu: 40000 # n * ${data.max_prompt_length} + ${data.max_response_length}
     grad_clip: 1.0
     clip_ratio: 0.2
     entropy_coeff: 0.0
@@ -107,7 +107,7 @@ actor_rollout_ref:
     do_sample: True
     log_prob_micro_batch_size_per_gpu: 1
 
-    n: 4 # for each prompt, sample n responses (i.e. num sample times). set it to values > 1 for grpo, rloo
+    n: 2 # for each prompt, sample n responses (i.e. num sample times). set it to values > 1 for grpo, rloo
     calculate_log_probs: True # set to True for computing log probs via rollouts
 
 reward_model:
@@ -115,7 +115,7 @@ reward_model:
 
 trainer:
   project_name: finance-mcp
-  run_name: qwen3-4b
+  run_name: qwen3-1.7b
   total_epochs: 3
   logger: ["console","wandb"]
 

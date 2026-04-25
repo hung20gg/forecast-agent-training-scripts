@@ -11,19 +11,22 @@ SAVE_FREQ=${SAVE_FREQ:-40}
 TEST_FREQ=${TEST_FREQ:-20}
 LORA_PATH=$PROJECT_DIR/models/qwen3-4b-v2/lora/sft
 
-size=${SIZE:-"micro"} # small, medium, large
+size=${SIZE:-"small"} # small, medium, large
 DEMO=${DEMO:-0}
 
+if [ "$size" == "small" ]; then 
+    LORA_PATH=$PROJECT_DIR/models/qwen3-1.7b-test/lora/sft
 
+fi
 
 if [ "$DEMO" == "1" ]; then
     echo "Downloading a small subset of the dataset for quick testing..."
-    python "$PROJECT_DIR/training-scripts/download.py" --local_save_dir $DATASET_DIR --limit_rows 50
+    python "$PROJECT_DIR/training-scripts/download.py" --local_save_dir "$DATASET_DIR" --limit_rows 50
     SAVE_FREQ=5
     TEST_FREQ=5
 
 else
-    python "$PROJECT_DIR/training-scripts/download.py" --local_save_dir $DATASET_DIR
+    python "$PROJECT_DIR/training-scripts/download.py" --local_save_dir "$DATASET_DIR"
 
 fi
 
@@ -64,4 +67,4 @@ python3 -m verl.trainer.main_ppo --config-path=$CONFIG_PATH \
     trainer.val_before_train=false \
     trainer.experiment_name=$EXPERIMENT_NAME \
     actor_rollout_ref.rollout.tensor_model_parallel_size=1 \
-    custom_reward_function.path="$PROJECT_DIR/training-scripts/config/reward_function.py" $@
+    custom_reward_function.path="$PROJECT_DIR/training-scripts/config/reward_function.py" "$@"

@@ -1,6 +1,8 @@
 import re
 import math
 import json
+import uuid
+import os
 from collections import Counter
 from typing import Dict, Any, Optional
 
@@ -202,6 +204,11 @@ def compute_score(data_source, solution_str, ground_truth, extra_info, alpha = 2
     #     "id": "c16c4a04-5501-491c-a127-3a9a2fe951cb"
     # }
 
+    os.makedirs('./tmp', exist_ok=True)
+    with open(f'./tmp/{str(uuid.uuid4())}.txt', 'w', encoding='utf-8') as f:
+        f.write(solution_str)
+    
+
     ground_truth = parse_ground_truth(ground_truth)
 
     tool_calls = extract_tool_call(solution_str)
@@ -256,6 +263,9 @@ def compute_score(data_source, solution_str, ground_truth, extra_info, alpha = 2
 
     if len(tool_calls) > 15:
         score -= 0.25
+
+    if len(tool_calls) > 20:
+        score = -1
 
 
     print(f"### Extracted answer: {pred['value']}, ground truth: {ground_truth}, score: {score}")
