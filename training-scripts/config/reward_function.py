@@ -6,14 +6,23 @@ import os
 from collections import Counter
 from typing import Dict, Any, Optional
 
-def parse_ground_truth(gt):
+def parse_ground_truth(gt: str):
+    gt = gt.strip()
+
+    # 1. parse JSON (dict, list, bool, null, number)
     try:
-        return json.loads(gt)   # dict/list case
-    except (json.JSONDecodeError, TypeError):
-        try:
-            return float(gt)    # numeric case
-        except (ValueError, TypeError):
-            raise ValueError(f"Invalid ground truth format: {gt}")
+        return json.loads(gt)
+    except json.JSONDecodeError:
+        pass
+
+    # 2. parse number (covers int + float + scientific)
+    try:
+        return float(gt)
+    except ValueError:
+        pass
+
+    # 3. fallback string
+    return gt
 
 # Extract <tool_call> ... </tool_call> from the response
 def extract_tool_call(response: str) -> list[str]:     
