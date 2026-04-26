@@ -13,7 +13,7 @@ data:
   max_prompt_length: 3000
   max_response_length: 17000
   shuffle: True
-  train_batch_size: 64
+  train_batch_size: 16
   return_raw_chat: True
 
 algorithm:
@@ -108,7 +108,7 @@ actor_rollout_ref:
     do_sample: True
     log_prob_micro_batch_size_per_gpu: 1
 
-    n: 4 # for each prompt, sample n responses (i.e. num sample times). set it to values > 1 for grpo, rloo
+    n: 8 # for each prompt, sample n responses (i.e. num sample times). set it to values > 1 for grpo, rloo
     calculate_log_probs: True # set to True for computing log probs via rollouts
 
 reward_model:
