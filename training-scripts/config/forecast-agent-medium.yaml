@@ -83,6 +83,7 @@ actor_rollout_ref:
   rollout:
     name: vllm
     mode: async
+    load_format: safetensors
     multi_turn:
       enable: True
       max_user_turns: 15

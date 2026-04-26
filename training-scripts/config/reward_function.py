@@ -267,6 +267,11 @@ def compute_score(data_source, solution_str, ground_truth, extra_info, alpha = 2
     if len(tool_calls) > 20:
         score = -1
 
+    if "Error executing tool" in solution_str:
+        score -= 0.5
+
+    score = max(min(score, 1.0), -1.0)
+
 
     print(f"### Extracted answer: {pred['value']}, ground truth: {ground_truth}, score: {score}")
     

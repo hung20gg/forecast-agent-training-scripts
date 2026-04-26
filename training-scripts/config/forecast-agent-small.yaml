@@ -22,7 +22,8 @@ algorithm:
 actor_rollout_ref:
   hybrid_engine: True
   model:
-    path: hung20gg/qwen3-1.7b-sql
+    # path: hung20gg/qwen3-1.7b-sql
+    # path: Qwen/Qwen3-1.7B
     # path: Qwen/Qwen3.5-4B
     enable_gradient_checkpointing: True
     enable_activation_offload: True
@@ -83,6 +84,7 @@ actor_rollout_ref:
   rollout:
     name: vllm
     mode: async
+    load_format: safetensors
     multi_turn:
       enable: True
       max_user_turns: 15
