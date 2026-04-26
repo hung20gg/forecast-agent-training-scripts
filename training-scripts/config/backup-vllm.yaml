@@ -117,7 +117,7 @@ reward_model:
 trainer:
   project_name: finance-mcp
   run_name: qwen3-4b
-  total_epochs: 1
+  total_epochs: 3
   logger: ["console","wandb"]
 
 custom_reward_function:

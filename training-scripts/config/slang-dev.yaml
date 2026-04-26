@@ -1,0 +1,35 @@
+  rollout:
+    name: sglang
+    mode: async
+    load_format: safetensors
+
+    multi_turn:
+      enable: True
+      max_user_turns: 15
+      tool_config_path: ./training-scripts/config/tool_config/mcp_config.yaml
+
+    agent:
+      default_agent_loop: tool_agent
+
+    temperature: 0.3
+    top_k: -1
+    top_p: 1
+
+    dtype: bfloat16
+    gpu_memory_utilization: 0.5
+
+    ignore_eos: False
+    enforce_eager: True
+    free_cache_engine: True
+    tensor_model_parallel_size: 1
+    max_model_len: 15000
+    max_num_batched_tokens: 8192
+    do_sample: True
+    log_prob_micro_batch_size_per_gpu: 1
+
+    n: 8
+    calculate_log_probs: True
+
+    engine_kwargs:
+      sglang:
+        attention_backend: flashinfer

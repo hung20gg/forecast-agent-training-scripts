@@ -39,7 +39,7 @@ actor_rollout_ref:
     ppo_micro_batch_size: null # will be deprecated, use ppo_micro_batch_size_per_gpu
     ppo_micro_batch_size_per_gpu: 1
     use_dynamic_bsz: False
-    ppo_max_token_len_per_gpu: 40000 # n * ${data.max_prompt_length} + ${data.max_response_length}
+    ppo_max_token_len_per_gpu: 120000 # n * ${data.max_prompt_length} + ${data.max_response_length}
     grad_clip: 1.0
     clip_ratio: 0.2
     entropy_coeff: 0.0
@@ -105,12 +105,12 @@ actor_rollout_ref:
     enforce_eager: True
     free_cache_engine: True
     tensor_model_parallel_size: 1
-    max_model_len: 20000
+    max_model_len: 15000
     max_num_batched_tokens: 8192
     do_sample: True
     log_prob_micro_batch_size_per_gpu: 1
 
-    n: 4 # for each prompt, sample n responses (i.e. num sample times). set it to values > 1 for grpo, rloo
+    n: 8 # for each prompt, sample n responses (i.e. num sample times). set it to values > 1 for grpo, rloo
     calculate_log_probs: True # set to True for computing log probs via rollouts
 
 reward_model:
@@ -119,7 +119,9 @@ reward_model:
 trainer:
   project_name: finance-mcp
   run_name: qwen3-1.7b
-  total_epochs: 3
+  total_epochs: 1
+  save_freq: 100
+  test_freq: 10
   logger: ["console","wandb"]
 
 custom_reward_function:
