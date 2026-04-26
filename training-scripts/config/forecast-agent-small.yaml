@@ -11,7 +11,7 @@ data:
   train_files: ~/data/financial-dataset/train.parquet
   val_files: ~/data/financial-dataset/test.parquet
   max_prompt_length: 3000
-  max_response_length: 17000
+  max_response_length: 12000
   shuffle: True
   train_batch_size: 16
   return_raw_chat: True
