@@ -110,7 +110,7 @@ actor_rollout_ref:
     do_sample: True
     log_prob_micro_batch_size_per_gpu: 1
 
-    n: 2 # for each prompt, sample n responses (i.e. num sample times). set it to values > 1 for grpo, rloo
+    n: 4 # for each prompt, sample n responses (i.e. num sample times). set it to values > 1 for grpo, rloo
     calculate_log_probs: True # set to True for computing log probs via rollouts
 
 reward_model:

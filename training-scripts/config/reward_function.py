@@ -204,9 +204,9 @@ def compute_score(data_source, solution_str, ground_truth, extra_info, alpha = 2
     #     "id": "c16c4a04-5501-491c-a127-3a9a2fe951cb"
     # }
 
-    os.makedirs('./tmp', exist_ok=True)
-    with open(f'./tmp/{str(uuid.uuid4())}.txt', 'w', encoding='utf-8') as f:
-        f.write(solution_str)
+    # os.makedirs('./tmp', exist_ok=True)
+    # with open(f'./tmp/{str(uuid.uuid4())}.txt', 'w', encoding='utf-8') as f:
+    #     f.write(solution_str)
     
 
     ground_truth = parse_ground_truth(ground_truth)

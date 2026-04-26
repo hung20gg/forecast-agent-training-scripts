@@ -55,7 +55,7 @@ if __name__ == "__main__":
         dataset = datasets.load_dataset(data_source)
 
     train_dataset = dataset["train"]
-    test_dataset = dataset["test"]
+    test_dataset = dataset["val"]
 
     if args.limit_rows is not None:
         train_dataset = train_dataset.select(range(args.limit_rows))
@@ -106,9 +106,9 @@ if __name__ == "__main__":
     os.makedirs(local_save_dir, exist_ok=True)
 
     train_dataset.to_parquet(os.path.join(local_save_dir, "train.parquet"))
-    test_dataset.to_parquet(os.path.join(local_save_dir, "test.parquet"))
+    test_dataset.to_parquet(os.path.join(local_save_dir, "val.parquet"))
 
-    print(os.path.join(local_save_dir, "train.parquet"))
+    print(os.path.join(local_save_dir, "val.parquet"))
 
     # if hdfs_dir is not None:
     #     makedirs(hdfs_dir)

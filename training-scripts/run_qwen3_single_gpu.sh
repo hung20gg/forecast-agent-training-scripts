@@ -26,7 +26,7 @@ else
 fi
 
 financial_train_path="$DATASET_DIR/train.parquet"
-financial_test_path="$DATASET_DIR/test.parquet"
+financial_test_path="$DATASET_DIR/val.parquet"
 
 train_files="['$financial_train_path']"
 test_files="['$financial_test_path']"
